@@ -38,7 +38,7 @@ public class MainFragment extends Fragment {
             Window w = getActivity().getWindow();
             w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            w.setStatusBarColor(getResources().getColor(R.color.primary));
+            w.setStatusBarColor(getResources().getColor(R.color.primary_dark));
         }
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
@@ -56,7 +56,7 @@ public class MainFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "title";
+            return "   title   ";
         }
 
         @Override
@@ -66,7 +66,7 @@ public class MainFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return 2;
+            return 5;
         }
     }
 }
