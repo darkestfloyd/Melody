@@ -27,10 +27,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
-            android:background="@color/primary"
+            android:paddingEnd="0dp"
+            android:paddingStart="48dp"
             android:scrollbars="horizontal"
             app:tabGravity="center"
-            app:tabMode="scrollable" />
+            app:tabIndicatorColor="@color/primary"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@color/accent"
+            app:tabTextColor="@color/primary_text" />
     </android.support.design.widget.AppBarLayout>
 
 </android.support.design.widget.CoordinatorLayout>
