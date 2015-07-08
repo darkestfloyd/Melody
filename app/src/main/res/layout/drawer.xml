@@ -5,18 +5,25 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme.TranslucentWindow">
 
-    <FrameLayout
-        android:id="@+id/fragmentContainer"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
-        app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/drawer_menu"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        app:headerLayout="@layout/drawer_header"
+        app:itemTextColor="@android:color/black"
+        app:menu="@menu/drawer_menu" />
 
 </android.support.v4.widget.DrawerLayout>

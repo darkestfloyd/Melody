@@ -11,7 +11,7 @@
         <item name="android:paddingEnd">@dimen/padding_left_right</item>
         <item name="android:paddingTop">@dimen/navigation_text_padding</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:color">#FFF</item>
+        <item name="android:color">@color/primary_text</item>
     </style>
 
 </resources>
