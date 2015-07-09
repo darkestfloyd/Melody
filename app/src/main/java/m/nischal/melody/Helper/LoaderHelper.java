@@ -1,4 +1,4 @@
-package m.nischal.melody;
+package m.nischal.melody.Helper;
 
 /*The MIT License (MIT)
  *
@@ -23,50 +23,25 @@ package m.nischal.melody;
  *    THE SOFTWARE.
  */
 
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.content.Context;
+import android.database.Cursor;
 
 import java.util.ArrayList;
 
 import m.nischal.melody.ObjectModels.Album;
 import m.nischal.melody.ObjectModels.BaseModel;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RVViewHolder> {
+public class LoaderHelper {
 
-    private ArrayList<BaseModel> baseModelArrayList;
-
-    public RecyclerViewAdapter(ArrayList<BaseModel> baseModelArrayList) {
-        this.baseModelArrayList = baseModelArrayList;
-    }
-
-    @Override
-    public RVViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new RVViewHolder(LayoutInflater
-                .from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(RVViewHolder holder, int position) {
-        Album album = (Album) baseModelArrayList.get(position);
-        holder.textView.setText(album.getAlbum());
-    }
-
-    @Override
-    public int getItemCount() {
-        return baseModelArrayList.size();
-    }
-
-    class RVViewHolder extends RecyclerView.ViewHolder {
-
-        TextView textView;
-
-        public RVViewHolder(View itemView) {
-            super(itemView);
-            textView = (TextView) itemView;
-        }
+    public static Observable<Cursor> getObservable(Context context, QueryObject queryObject) {
+        return Observable
+                .just(context.getContentResolver())
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap(queryObject::query);
     }
 
 }

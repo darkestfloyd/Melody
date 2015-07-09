@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +19,8 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Helper.LoaderHelper;
+import m.nischal.melody.ObjectModels.BaseModel;
 import m.nischal.melody.R;
 import m.nischal.melody.demo;
 
@@ -63,7 +64,7 @@ public class MainFragment extends Fragment {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-     }
+    }
 
     private static class TitleHelper {
 
@@ -93,7 +94,13 @@ public class MainFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             //TODO implement for different types
-            if (position == 0) return new BaseFragment();
+            if (position == 0) {
+                BaseFragment base = new BaseFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt(BaseModel.VIEW_PAGER_POSITION_STRING, position);
+                base.setArguments(bundle);
+                return base;
+            }
             return new demo();
         }
 
