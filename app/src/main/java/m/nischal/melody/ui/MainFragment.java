@@ -94,7 +94,7 @@ public class MainFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             //TODO implement for different types
-            if (position == 0) {
+            if (position == 1) {
                 BaseFragment base = new BaseFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt(BaseModel.VIEW_PAGER_POSITION_STRING, position);
@@ -108,6 +108,7 @@ public class MainFragment extends Fragment {
         public int getCount() {
             return titles.size();
         }
+
     }
 
 }

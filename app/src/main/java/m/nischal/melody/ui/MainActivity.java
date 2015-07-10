@@ -9,7 +9,6 @@ import android.view.Gravity;
 import android.view.View;
 
 import m.nischal.melody.R;
-import m.nischal.melody.ui.MainFragment;
 
 /**
  * Created by Cyplops on 08-Jul-15.
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         actionBarDrawerToggle.onDrawerStateChanged(newState);
     }
 
-    public void openDrawer(){
+    public void openDrawer() {
         drawerLayout.openDrawer(Gravity.LEFT);
     }
 }

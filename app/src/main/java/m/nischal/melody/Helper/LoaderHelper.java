@@ -26,10 +26,6 @@ package m.nischal.melody.Helper;
 import android.content.Context;
 import android.database.Cursor;
 
-import java.util.ArrayList;
-
-import m.nischal.melody.ObjectModels.Album;
-import m.nischal.melody.ObjectModels.BaseModel;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -37,6 +33,7 @@ import rx.schedulers.Schedulers;
 public class LoaderHelper {
 
     public static Observable<Cursor> getObservable(Context context, QueryObject queryObject) {
+        DebugHelper.Logger.d("returning observable!");
         return Observable
                 .just(context.getContentResolver())
                 .observeOn(Schedulers.io())

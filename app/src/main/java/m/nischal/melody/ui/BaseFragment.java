@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.LoaderHelper;
 import m.nischal.melody.Helper.QueryObject;
 import m.nischal.melody.ObjectModels.Album;
@@ -41,11 +42,13 @@ import m.nischal.melody.ObjectModels.BaseModel;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewAdapter;
 import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
 
-    private int fragmnetType;
+    private int fragmentType;
     private ArrayList<BaseModel> baseModelArrayList = new ArrayList<>();
     private RecyclerView rv;
     private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -53,7 +56,8 @@ public class BaseFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        fragmnetType = getArguments().getInt(BaseModel.VIEW_PAGER_POSITION_STRING);
+        fragmentType = getArguments().getInt(BaseModel.VIEW_PAGER_POSITION_STRING);
+        DebugHelper.Logger.v("BaseFragment creation with value " + fragmentType);
         return inflater.inflate(R.layout.recycler_view, container, false);
     }
 
@@ -64,7 +68,6 @@ public class BaseFragment extends Fragment {
         rv = (RecyclerView) view.findViewById(R.id.recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         populateList();
-        rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
     }
 
     @Override
@@ -75,12 +78,32 @@ public class BaseFragment extends Fragment {
     }
 
     private void populateList() {
-        switch (fragmnetType) {
+        switch (fragmentType) {
             case BaseModel.ALBUMS:
+                DebugHelper.Logger.v("populating list for fragment type: ", fragmentType);
                 QueryObject queryObject = new QueryObject(Album.album_uri, Album.album_projections, null, null, null);
-                subscriptions.add(LoaderHelper.getObservable(getActivity().getApplicationContext(), queryObject)
+
+                Subscription sc = LoaderHelper.getObservable(getActivity().getApplicationContext(), queryObject)
                         .flatMap(cursor -> Observable.from(Album.createAlbumsFromCursor(cursor)))
-                        .subscribe(baseModelArrayList::add));
+                        .subscribe(new Observer<Album>() {
+                            @Override
+                            public void onCompleted() {
+                                DebugHelper.Logger.d("onComplete called");
+                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                DebugHelper.Logger.d("onError called " + e.getMessage());
+                            }
+
+                            @Override
+                            public void onNext(Album album) {
+                                baseModelArrayList.add(album);
+                            }
+                        });
+                subscriptions.add(sc);
+
                 break;
         }
     }
