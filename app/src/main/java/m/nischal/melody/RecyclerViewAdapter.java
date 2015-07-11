@@ -31,14 +31,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.ObjectModels.Album;
-import m.nischal.melody.ObjectModels.BaseModel;
+import m.nischal.melody.ObjectModels._BaseModel;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RVViewHolder> {
 
-    private ArrayList<BaseModel> baseModelArrayList;
+    private ArrayList<_BaseModel> baseModelArrayList;
 
-    public RecyclerViewAdapter(ArrayList<BaseModel> baseModelArrayList) {
+    public RecyclerViewAdapter(ArrayList<_BaseModel> baseModelArrayList) {
         this.baseModelArrayList = baseModelArrayList;
     }
 
@@ -50,8 +49,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(RVViewHolder holder, int position) {
-        Album album = (Album) baseModelArrayList.get(position);
-        holder.textView.setText(album.getAlbum());
+        baseModelArrayList.get(position).injectIntoHolder(holder);
     }
 
     @Override
@@ -59,9 +57,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return baseModelArrayList.size();
     }
 
-    class RVViewHolder extends RecyclerView.ViewHolder {
+    public class RVViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textView;
+        public TextView textView;
 
         public RVViewHolder(View itemView) {
             super(itemView);

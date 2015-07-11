@@ -33,11 +33,10 @@ import rx.schedulers.Schedulers;
 public class LoaderHelper {
 
     public static Observable<Cursor> getObservable(Context context, QueryObject queryObject) {
-        DebugHelper.Logger.d("returning observable!");
+        DebugHelper.LumberJack.d("returning observable!");
         return Observable
                 .just(context.getContentResolver())
                 .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(queryObject::query);
     }
 

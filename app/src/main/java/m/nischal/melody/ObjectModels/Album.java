@@ -30,42 +30,39 @@ import android.provider.MediaStore;
 import java.util.ArrayList;
 
 import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.RecyclerViewAdapter;
 
 /**
- * <h>Album</h>
+ * <code>Album</code>
  * <p>
  * Model class to represent an Album entry from the MediaStore.
- * All objects of Album are immutable.
+ * All objects of <code>Album</code> are immutable.
  */
-public class Album extends BaseModel {
+public final class Album extends _BaseModel {
 
     public static final int ALBUM_ID = 0;
     public static final int ALBUM_COLUMN = 1;
     public static final int ALBUM_ART_COLUMN = 2;
-    public static final int ALBUM_KEY_COLUMN = 3;
-    public static final int ARTIST_COLUMN = 4;
-    public static final int FIRST_YEAR_COLUMN = 5;
-    public static final int LAST_YEAR_COLUMN = 6;
-    public static final int NUMBER_OF_SONGS_COLUMN = 7;
-    final public static Uri album_uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
-    final public static String[] album_projections = {
+    public static final int ARTIST_COLUMN = 3;
+    public static final int FIRST_YEAR_COLUMN = 4;
+    public static final int LAST_YEAR_COLUMN = 5;
+    public static final int NUMBER_OF_SONGS_COLUMN = 6;
+    public static final Uri album_uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+    public static final String[] album_projections = {
             MediaStore.Audio.Albums._ID,
             MediaStore.Audio.Albums.ALBUM,
             MediaStore.Audio.Albums.ALBUM_ART,
-            MediaStore.Audio.Albums.ALBUM_KEY,
             MediaStore.Audio.Albums.ARTIST,
             MediaStore.Audio.Albums.FIRST_YEAR,
             MediaStore.Audio.Albums.LAST_YEAR,
             MediaStore.Audio.Albums.NUMBER_OF_SONGS,
     };
-    final private String album_id, album, album_art, album_artist, album_number_of_songs, album_key;
-    final private YearPair album_years;
+    final private String album_id, album, album_art, album_artist, album_number_of_songs, album_first_year, album_last_year;
 
     /**
      * Constructor for Album object.
      *
-     * @param album_id              The id for the album
-     * @param album_key             A non human readable key calculated from the ALBUM, used for searching, sorting and grouping.
+     * @param album_id              The id for the album.
      * @param album                 The album on which the audio file appears, if any.
      * @param album_art             Cached album art.
      * @param album_artist          The artist whose songs appear on this album.
@@ -73,33 +70,32 @@ public class Album extends BaseModel {
      * @param album_last_year       The year in which the latest songs on this album were released.
      * @param album_number_of_songs The number of songs on this album.
      */
-    public Album(String album_id, String album, String album_art, String album_key, String album_artist
+    public Album(String album_id, String album, String album_art, String album_artist
             , String album_first_year, String album_last_year, String album_number_of_songs) {
-        this.album_key = album_key;
         this.album_id = album_id;
         this.album = album;
         this.album_art = album_art;
         this.album_artist = album_artist;
         this.album_number_of_songs = album_number_of_songs;
-        this.album_years = new YearPair(album_first_year, album_last_year);
+        this.album_first_year = album_first_year;
+        this.album_last_year = album_last_year;
     }
 
     public static ArrayList<Album> createAlbumsFromCursor(Cursor c) {
         ArrayList<Album> albums = new ArrayList<>();
-        DebugHelper.Logger.v("creation in progress.. ");
+        DebugHelper.LumberJack.v("creation in progress.. ");
         c.moveToFirst();
         do {
             String album = c.getString(ALBUM_COLUMN);
             String album_art = c.getString(ALBUM_ART_COLUMN);
-            String album_key = c.getString(ALBUM_KEY_COLUMN);
             String album_artist = c.getString(ARTIST_COLUMN);
             String album_fy = c.getString(FIRST_YEAR_COLUMN);
             String album_ly = c.getString(LAST_YEAR_COLUMN);
             String album_num = c.getString(NUMBER_OF_SONGS_COLUMN);
             String album_id = c.getString(ALBUM_ID);
-            albums.add(new Album(album_id, album, album_art, album_key, album_artist, album_fy, album_ly, album_num));
+            albums.add(new Album(album_id, album, album_art, album_artist, album_fy, album_ly, album_num));
         } while (c.moveToNext());
-        DebugHelper.Logger.v("cursor size: " + c.getCount());
+        DebugHelper.LumberJack.v("cursor size: " + c.getCount());
         c.close();
         return albums;
     }
@@ -110,7 +106,25 @@ public class Album extends BaseModel {
      */
     @Override
     public String toString() {
-        return "{[" + album + "], [" + album_key + "], [" + album_artist + "]}";
+        return "{[" + album + "], [" + album_id + "], [" + album_artist + "]}";
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param holder The holder to inject the values in.
+     */
+    @Override
+    public void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder) {
+        holder.textView.setText(album);
+    }
+
+    public String getAlbum_first_year() {
+        return album_first_year;
+    }
+
+    public String getAlbum_last_year() {
+        return album_last_year;
     }
 
     public String getAlbum_id() {
@@ -129,44 +143,8 @@ public class Album extends BaseModel {
         return album_artist;
     }
 
-    public String getAlbum_key() {
-        return album_key;
-    }
-
-    public YearPair getAlbum_first_year() {
-        return album_years;
-    }
-
     public String getAlbum_number_of_songs() {
         return album_number_of_songs;
     }
 
-
-    /**
-     * <h>YearPair</h>
-     * <p>
-     * Helper class to wrap the first and last years for an album object.
-     */
-    private class YearPair {
-        final private String album_first_year, album_last_year;
-
-        /**
-         * Constructor for YearPair
-         *
-         * @param album_first_year The year in which the earliest songs on this album were released.
-         * @param album_last_year  The year in which the latest songs on this album were released.
-         */
-        private YearPair(String album_first_year, String album_last_year) {
-            this.album_first_year = album_first_year;
-            this.album_last_year = album_last_year;
-        }
-
-        public String getAlbum_first_year() {
-            return album_first_year;
-        }
-
-        public String getAlbum_last_year() {
-            return album_last_year;
-        }
-    }
 }

@@ -27,7 +27,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import rx.Observable;
 import rx.Observer;
 
 public class DebugHelper {
@@ -36,25 +35,25 @@ public class DebugHelper {
         return new Observer<T>() {
             @Override
             public void onCompleted() {
-                Logger.d("Debug observer/onComplete called");
+                LumberJack.d("Debug observer/onComplete called");
             }
 
             @Override
             public void onError(Throwable e) {
-                Logger.e("Debug observer/onError called");
+                LumberJack.e("Debug observer/onError called");
 
             }
 
             @Override
             public void onNext(T t) {
-                Logger.d("Debug observer/onNext called with " + t.toString());
+                LumberJack.d("Debug observer/onNext called with " + t.toString());
             }
         };
     }
 
     private static final Boolean LOG_ENABLE = true;
 
-    public static class Logger {
+    public static class LumberJack {
 
         public static final String TAG = "m.nischal.TAG";
 

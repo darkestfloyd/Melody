@@ -38,26 +38,26 @@ import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.LoaderHelper;
 import m.nischal.melody.Helper.QueryObject;
 import m.nischal.melody.ObjectModels.Album;
-import m.nischal.melody.ObjectModels.BaseModel;
+import m.nischal.melody.ObjectModels.Song;
+import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewAdapter;
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
 
     private int fragmentType;
-    private ArrayList<BaseModel> baseModelArrayList = new ArrayList<>();
+    private ArrayList<_BaseModel> baseModelArrayList = new ArrayList<>();
     private RecyclerView rv;
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        fragmentType = getArguments().getInt(BaseModel.VIEW_PAGER_POSITION_STRING);
-        DebugHelper.Logger.v("BaseFragment creation with value " + fragmentType);
+        fragmentType = getArguments().getInt(_BaseModel.VIEW_PAGER_POSITION_STRING);
+        DebugHelper.LumberJack.v("BaseFragment creation with value " + fragmentType);
         return inflater.inflate(R.layout.recycler_view, container, false);
     }
 
@@ -78,33 +78,58 @@ public class BaseFragment extends Fragment {
     }
 
     private void populateList() {
+        DebugHelper.LumberJack.v("populating list for fragment type: ", fragmentType);
+        QueryObject queryObject;
         switch (fragmentType) {
-            case BaseModel.ALBUMS:
-                DebugHelper.Logger.v("populating list for fragment type: ", fragmentType);
-                QueryObject queryObject = new QueryObject(Album.album_uri, Album.album_projections, null, null, null);
+            case _BaseModel.ALBUMS:
+                queryObject = new QueryObject(Album.album_uri, Album.album_projections, null, null, null);
 
-                Subscription sc = LoaderHelper.getObservable(getActivity().getApplicationContext(), queryObject)
+                subscriptions.add(LoaderHelper
+                        .getObservable(getActivity().getApplicationContext(), queryObject)
                         .flatMap(cursor -> Observable.from(Album.createAlbumsFromCursor(cursor)))
                         .subscribe(new Observer<Album>() {
                             @Override
                             public void onCompleted() {
-                                DebugHelper.Logger.d("onComplete called");
+                                DebugHelper.LumberJack.d("onComplete called for albums.. populating adapter!");
                                 rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                DebugHelper.Logger.d("onError called " + e.getMessage());
+                                DebugHelper.LumberJack.d("onError called for albums " + e.getMessage());
                             }
 
                             @Override
                             public void onNext(Album album) {
                                 baseModelArrayList.add(album);
                             }
-                        });
-                subscriptions.add(sc);
+                        }));
+                break;
+            case _BaseModel.SONGS:
+                queryObject = new QueryObject(Song.song_uri, Song.projections, Song.selection, null, null);
 
+                subscriptions.add(LoaderHelper
+                        .getObservable(getActivity().getApplicationContext(), queryObject)
+                        .flatMap(cursor -> Observable.from(Song.createAlbumsFromCursor(cursor)))
+                        .subscribe(new Observer<Song>() {
+                            @Override
+                            public void onCompleted() {
+                                DebugHelper.LumberJack.d("onComplete called for songs.. populating adapter!");
+                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                DebugHelper.LumberJack.d("onError called for songs" + e.getMessage());
+                            }
+
+                            @Override
+                            public void onNext(Song song) {
+                                baseModelArrayList.add(song);
+                            }
+                        }));
                 break;
         }
     }
+
 }

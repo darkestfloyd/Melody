@@ -23,12 +23,14 @@ package m.nischal.melody.ObjectModels;
  *    THE SOFTWARE.
  */
 
+import m.nischal.melody.RecyclerViewAdapter;
+
 /**
  * <h>BaseModel</h>
  * <p>
  * A general class to represent all ObjectModels. No particular use.
  */
-public abstract class BaseModel {
+public abstract class _BaseModel {
 
     public static final String VIEW_PAGER_POSITION_STRING = "m.nischal.melody.Helper.LoaderHelper.position";
 
@@ -42,6 +44,13 @@ public abstract class BaseModel {
      * Returns a String for Debugging.
      */
     public abstract String toString();
+
+    /**
+     * Method to set values in the {@link RecyclerViewAdapter.RVViewHolder} holder.
+     *
+     * @param holder The holder to inject the values in.
+     */
+    public abstract void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder);
 
 
 }

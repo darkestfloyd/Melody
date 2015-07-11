@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +19,7 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.LoaderHelper;
-import m.nischal.melody.ObjectModels.BaseModel;
+import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import m.nischal.melody.demo;
 
@@ -34,6 +33,8 @@ public class MainFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+
         return inflater.inflate(R.layout.tab_fragment, container, false);
     }
 
@@ -80,7 +81,7 @@ public class MainFragment extends Fragment {
 
     }
 
-    private class PagerAdapter extends FragmentStatePagerAdapter {
+    private class PagerAdapter extends FragmentPagerAdapter {
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -94,10 +95,10 @@ public class MainFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             //TODO implement for different types
-            if (position == 1) {
+            if (position == 1 || position == 0) {
                 BaseFragment base = new BaseFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt(BaseModel.VIEW_PAGER_POSITION_STRING, position);
+                bundle.putInt(_BaseModel.VIEW_PAGER_POSITION_STRING, position);
                 base.setArguments(bundle);
                 return base;
             }
@@ -109,6 +110,10 @@ public class MainFragment extends Fragment {
             return titles.size();
         }
 
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            //super.destroyItem(container, position, object);
+        }
     }
 
 }
