@@ -24,6 +24,7 @@ package m.nischal.melody.ui;
  */
 
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,12 +39,16 @@ import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.LoaderHelper;
 import m.nischal.melody.Helper.QueryObject;
 import m.nischal.melody.ObjectModels.Album;
+import m.nischal.melody.ObjectModels.Artist;
+import m.nischal.melody.ObjectModels.Genre;
+import m.nischal.melody.ObjectModels.Playlist;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewAdapter;
 import rx.Observable;
 import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
@@ -82,10 +87,11 @@ public class BaseFragment extends Fragment {
         QueryObject queryObject;
         switch (fragmentType) {
             case _BaseModel.ALBUMS:
-                queryObject = new QueryObject(Album.album_uri, Album.album_projections, null, null, null);
+                queryObject = new QueryObject(Album.album_uri, Album.album_projections, null, null, MediaStore.Audio.Albums.ALBUM);
 
                 subscriptions.add(LoaderHelper
                         .getObservable(getActivity().getApplicationContext(), queryObject)
+                        .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(cursor -> Observable.from(Album.createAlbumsFromCursor(cursor)))
                         .subscribe(new Observer<Album>() {
                             @Override
@@ -105,12 +111,14 @@ public class BaseFragment extends Fragment {
                             }
                         }));
                 break;
+
             case _BaseModel.SONGS:
-                queryObject = new QueryObject(Song.song_uri, Song.projections, Song.selection, null, null);
+                queryObject = new QueryObject(Song.song_uri, Song.projections, Song.selection, null, MediaStore.Audio.Media.TITLE);
 
                 subscriptions.add(LoaderHelper
                         .getObservable(getActivity().getApplicationContext(), queryObject)
-                        .flatMap(cursor -> Observable.from(Song.createAlbumsFromCursor(cursor)))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(cursor -> Observable.from(Song.createSongsFromCursor(cursor)))
                         .subscribe(new Observer<Song>() {
                             @Override
                             public void onCompleted() {
@@ -120,12 +128,90 @@ public class BaseFragment extends Fragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                DebugHelper.LumberJack.d("onError called for songs" + e.getMessage());
+                                DebugHelper.LumberJack.d("onError called for songs " + e.getMessage());
                             }
 
                             @Override
                             public void onNext(Song song) {
                                 baseModelArrayList.add(song);
+                            }
+                        }));
+                break;
+
+            case _BaseModel.ARTISTS:
+                queryObject = new QueryObject(Artist.artist_uri, Artist.projections, null, null, MediaStore.Audio.Artists.ARTIST);
+
+                subscriptions.add(LoaderHelper
+                        .getObservable(getActivity().getApplicationContext(), queryObject)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(cursor -> Observable.from(Artist.createArtistsFromCursor(cursor)))
+                        .subscribe(new Observer<Artist>() {
+                            @Override
+                            public void onCompleted() {
+                                DebugHelper.LumberJack.d("onComplete called for artists.. populating adapter!");
+                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                DebugHelper.LumberJack.d("onError called for artists " + e.getMessage());
+                            }
+
+                            @Override
+                            public void onNext(Artist artist) {
+                                baseModelArrayList.add(artist);
+                            }
+                        }));
+                break;
+
+            case _BaseModel.PLAYLISTS:
+                queryObject = new QueryObject(Playlist.playlist_uri, Playlist.projections, null, null, MediaStore.Audio.Playlists.NAME);
+
+                subscriptions.add(LoaderHelper
+                        .getObservable(getActivity().getApplicationContext(), queryObject)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(cursor -> Observable.from(Playlist.createPlaylistsFromCursor(cursor)))
+                        .subscribe(new Observer<Playlist>() {
+                            @Override
+                            public void onCompleted() {
+                                DebugHelper.LumberJack.d("onComplete called for playlists.. populating adapter!");
+                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                DebugHelper.LumberJack.d("onError called for playlists " + e.getMessage());
+                            }
+
+                            @Override
+                            public void onNext(Playlist playlist) {
+                                baseModelArrayList.add(playlist);
+                            }
+                        }));
+                break;
+
+            case _BaseModel.GENERS:
+                queryObject = new QueryObject(Genre.genres_uri, Genre.projections, null, null, MediaStore.Audio.Genres.NAME);
+
+                subscriptions.add(LoaderHelper
+                        .getObservable(getActivity().getApplicationContext(), queryObject)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(cursor -> Observable.from(Genre.createGenersFromCursor(cursor)))
+                        .subscribe(new Observer<Genre>() {
+                            @Override
+                            public void onCompleted() {
+                                DebugHelper.LumberJack.d("onComplete called for genres.. populating adapter!");
+                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                DebugHelper.LumberJack.d("onError called for genres " + e.getMessage());
+                            }
+
+                            @Override
+                            public void onNext(Genre genre) {
+                                baseModelArrayList.add(genre);
                             }
                         }));
                 break;

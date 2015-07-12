@@ -93,9 +93,9 @@ public final class Song extends _BaseModel {
      * @param song_track         The track number of this song on the album, if any.
      * @param song_year          The year the audio file was recorded, if any
      */
-    public Song(String song_id, String song_title, String song_display_name, String song_date_added, String song_date_modified,
-                String song_size, String song_album, String song_album_id, String song_artist, String song_artist_id,
-                String song_bookmark, String song_duration, String song_track, String song_year) {
+    private Song(String song_id, String song_title, String song_display_name, String song_date_added, String song_date_modified,
+                 String song_size, String song_album, String song_album_id, String song_artist, String song_artist_id,
+                 String song_bookmark, String song_duration, String song_track, String song_year) {
         this.song_id = song_id;
         this.song_title = song_title;
         this.song_display_name = song_display_name;
@@ -112,29 +112,37 @@ public final class Song extends _BaseModel {
         this.song_year = song_year;
     }
 
-    public static ArrayList<Song> createAlbumsFromCursor(Cursor c) {
+    /**
+     * Method to get list of all songs from cursor.
+     *
+     * @param c Cursor to pull values from.
+     * @return ArrayList of the song.
+     */
+    public static ArrayList<Song> createSongsFromCursor(Cursor c) {
         ArrayList<Song> songs = new ArrayList<>();
-        DebugHelper.LumberJack.v("creation in progress.. ");
-        c.moveToFirst();
-        do {
-            String _id = c.getString(SONG_ID);
-            String title = c.getString(SONG_TITLE_COLUMN);
-            String display_name = c.getString(SONG_DISPLAY_NAME_COLUMN);
-            String date_added = c.getString(SONG_DATE_ADDED_COLUMN);
-            String date_modified = c.getString(SONG_DATE_MODIFIED_COLUMN);
-            String size = c.getString(SONG_SIZ_COLUMNE);
-            String album = c.getString(SONG_ALBUM_COLUMN);
-            String album_id = c.getString(SONG_ALBUM_ID_COLUMN);
-            String artist = c.getString(SONG_ARTIST_COLUMN);
-            String artist_id = c.getString(SONG_ARTIST_ID_COLUMN);
-            String bookmark = c.getString(SONG_BOOKMARK_COLUMN);
-            String duration = c.getString(SONG_DURATION_COLUMN);
-            String track = c.getString(SONG_TRACK_NUMBER_COLUMN);
-            String year = c.getString(SONG_YEAR_COLUMN);
-            songs.add(new Song(_id, title, display_name, date_added, date_modified, size, album, album_id,
-                    artist, artist_id, bookmark, duration, track, year));
-        } while (c.moveToNext());
-        DebugHelper.LumberJack.v("cursor size: " + c.getCount());
+        DebugHelper.LumberJack.v("creation of songs in progress.. ");
+        if (c.getCount() != 0) {
+            c.moveToFirst();
+            do {
+                String _id = c.getString(SONG_ID);
+                String title = c.getString(SONG_TITLE_COLUMN);
+                String display_name = c.getString(SONG_DISPLAY_NAME_COLUMN);
+                String date_added = c.getString(SONG_DATE_ADDED_COLUMN);
+                String date_modified = c.getString(SONG_DATE_MODIFIED_COLUMN);
+                String size = c.getString(SONG_SIZ_COLUMNE);
+                String album = c.getString(SONG_ALBUM_COLUMN);
+                String album_id = c.getString(SONG_ALBUM_ID_COLUMN);
+                String artist = c.getString(SONG_ARTIST_COLUMN);
+                String artist_id = c.getString(SONG_ARTIST_ID_COLUMN);
+                String bookmark = c.getString(SONG_BOOKMARK_COLUMN);
+                String duration = c.getString(SONG_DURATION_COLUMN);
+                String track = c.getString(SONG_TRACK_NUMBER_COLUMN);
+                String year = c.getString(SONG_YEAR_COLUMN);
+                songs.add(new Song(_id, title, display_name, date_added, date_modified, size, album, album_id,
+                        artist, artist_id, bookmark, duration, track, year));
+            } while (c.moveToNext());
+        }
+        DebugHelper.LumberJack.v("cursor size for songs: " + c.getCount());
         c.close();
         return songs;
     }

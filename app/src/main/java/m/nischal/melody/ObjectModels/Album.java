@@ -70,7 +70,7 @@ public final class Album extends _BaseModel {
      * @param album_last_year       The year in which the latest songs on this album were released.
      * @param album_number_of_songs The number of songs on this album.
      */
-    public Album(String album_id, String album, String album_art, String album_artist
+    private Album(String album_id, String album, String album_art, String album_artist
             , String album_first_year, String album_last_year, String album_number_of_songs) {
         this.album_id = album_id;
         this.album = album;
@@ -81,21 +81,29 @@ public final class Album extends _BaseModel {
         this.album_last_year = album_last_year;
     }
 
+    /**
+     * Method to get list of all albums from cursor.
+     *
+     * @param c Cursor to pull values from.
+     * @return ArrayList of the album.
+     */
     public static ArrayList<Album> createAlbumsFromCursor(Cursor c) {
         ArrayList<Album> albums = new ArrayList<>();
-        DebugHelper.LumberJack.v("creation in progress.. ");
-        c.moveToFirst();
-        do {
-            String album = c.getString(ALBUM_COLUMN);
-            String album_art = c.getString(ALBUM_ART_COLUMN);
-            String album_artist = c.getString(ARTIST_COLUMN);
-            String album_fy = c.getString(FIRST_YEAR_COLUMN);
-            String album_ly = c.getString(LAST_YEAR_COLUMN);
-            String album_num = c.getString(NUMBER_OF_SONGS_COLUMN);
-            String album_id = c.getString(ALBUM_ID);
-            albums.add(new Album(album_id, album, album_art, album_artist, album_fy, album_ly, album_num));
-        } while (c.moveToNext());
-        DebugHelper.LumberJack.v("cursor size: " + c.getCount());
+        DebugHelper.LumberJack.v("creation of albums in progress.. ");
+        if (c.getCount() != 0) {
+            c.moveToFirst();
+            do {
+                String album = c.getString(ALBUM_COLUMN);
+                String album_art = c.getString(ALBUM_ART_COLUMN);
+                String album_artist = c.getString(ARTIST_COLUMN);
+                String album_fy = c.getString(FIRST_YEAR_COLUMN);
+                String album_ly = c.getString(LAST_YEAR_COLUMN);
+                String album_num = c.getString(NUMBER_OF_SONGS_COLUMN);
+                String album_id = c.getString(ALBUM_ID);
+                albums.add(new Album(album_id, album, album_art, album_artist, album_fy, album_ly, album_num));
+            } while (c.moveToNext());
+        }
+        DebugHelper.LumberJack.v("cursor size for albums: " + c.getCount());
         c.close();
         return albums;
     }

@@ -20,7 +20,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/primary"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            app:contentInsetLeft="72dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <TextView
+                style="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title"
+                android:layout_width="wrap_content"
+                android:paddingStart="16dp"
+                android:layout_height="match_parent"
+                android:text="@string/app_name" />
+
+        </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"

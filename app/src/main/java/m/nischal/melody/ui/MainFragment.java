@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
-import m.nischal.melody.demo;
 
 /**
  * Created by Cyplops on 08-Jul-15.
@@ -33,8 +32,6 @@ public class MainFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
         return inflater.inflate(R.layout.tab_fragment, container, false);
     }
 
@@ -55,15 +52,15 @@ public class MainFragment extends Fragment {
         }
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
-        viewPager.setAdapter(new PagerAdapter(getFragmentManager()));
+        viewPager.setAdapter(new PagerAdapter(getChildFragmentManager()));
 
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setIcon(R.drawable.ic_menu_black_24dp);
+            actionBar.setDisplayShowTitleEnabled(false);
         }
     }
 
@@ -94,15 +91,11 @@ public class MainFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            //TODO implement for different types
-            if (position == 1 || position == 0) {
-                BaseFragment base = new BaseFragment();
-                Bundle bundle = new Bundle();
-                bundle.putInt(_BaseModel.VIEW_PAGER_POSITION_STRING, position);
-                base.setArguments(bundle);
-                return base;
-            }
-            return new demo();
+            BaseFragment base = new BaseFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(_BaseModel.VIEW_PAGER_POSITION_STRING, position);
+            base.setArguments(bundle);
+            return base;
         }
 
         @Override
@@ -112,6 +105,8 @@ public class MainFragment extends Fragment {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
+            //Not deleting items for now!
+            //TODO Get some way to store the fragments.
             //super.destroyItem(container, position, object);
         }
     }

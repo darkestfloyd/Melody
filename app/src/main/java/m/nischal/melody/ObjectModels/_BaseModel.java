@@ -23,6 +23,10 @@ package m.nischal.melody.ObjectModels;
  *    THE SOFTWARE.
  */
 
+import android.database.Cursor;
+
+import java.util.ArrayList;
+
 import m.nischal.melody.RecyclerViewAdapter;
 
 /**

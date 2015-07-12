@@ -32,11 +32,18 @@ import rx.schedulers.Schedulers;
 
 public class LoaderHelper {
 
+    /**
+     * Helper class to reduce boilerplate code.
+     *
+     * @param context Activity Context.
+     * @param queryObject QueryObject object.
+     * @return Observable og Cursor
+     */
     public static Observable<Cursor> getObservable(Context context, QueryObject queryObject) {
         DebugHelper.LumberJack.d("returning observable!");
         return Observable
                 .just(context.getContentResolver())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .flatMap(queryObject::query);
     }
 
