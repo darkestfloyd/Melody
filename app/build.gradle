@@ -48,7 +48,7 @@ dependencies {
 
 
 task('incrementVersionCode') << {
-    def manifestFile = file("src\\main\\AndroidManifest.xml")
+    def manifestFile = file("src/main/AndroidManifest.xml")
     def pattern = Pattern.compile("versionCode=\"(\\d+)\"")
     def manifestText = manifestFile.getText()
     def matcher = pattern.matcher(manifestText)
@@ -59,7 +59,7 @@ task('incrementVersionCode') << {
 }
 
 task('incrementBuildCode') << {
-    def manifestFile = file("src\\main\\AndroidManifest.xml")
+    def manifestFile = file("src/main/AndroidManifest.xml")
     def patternVersionNumber = Pattern.compile("versionName=\"(\\d+)\\.(\\d+)\\.(\\d+)\"")
     def manifestText = manifestFile.getText()
     def matcherVersionNumber = patternVersionNumber.matcher(manifestText)
