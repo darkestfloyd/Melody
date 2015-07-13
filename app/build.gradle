@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+import java.util.regex.Pattern
+
 buildscript {
     repositories {
         mavenCentral()
@@ -19,8 +21,6 @@ android {
         applicationId "m.nischal.melody"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 1
-        versionName "0.0.1"
     }
     buildTypes {
         release {
@@ -37,7 +37,6 @@ android {
     }
 }
 
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
@@ -45,4 +44,39 @@ dependencies {
     compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'io.reactivex:rxandroid:0.25.0'
+}
+
+
+task('incrementVersionCode') << {
+    def manifestFile = file("src\\main\\AndroidManifest.xml")
+    def pattern = Pattern.compile("versionCode=\"(\\d+)\"")
+    def manifestText = manifestFile.getText()
+    def matcher = pattern.matcher(manifestText)
+    matcher.find()
+    def versionCode = Integer.parseInt(matcher.group(1))
+    def manifestContent = matcher.replaceAll("versionCode=\"" + ++versionCode + "\"")
+    manifestFile.write(manifestContent)
+}
+
+task('incrementBuildCode') << {
+    def manifestFile = file("src\\main\\AndroidManifest.xml")
+    def patternVersionNumber = Pattern.compile("versionName=\"(\\d+)\\.(\\d+)\\.(\\d+)\"")
+    def manifestText = manifestFile.getText()
+    def matcherVersionNumber = patternVersionNumber.matcher(manifestText)
+    matcherVersionNumber.find()
+    def majorVersion = Integer.parseInt(matcherVersionNumber.group(1))
+    def minorVersion = Integer.parseInt(matcherVersionNumber.group(2))
+    def pointVersion = Integer.parseInt(matcherVersionNumber.group(3))
+    def mNextVersionName = majorVersion + "." + minorVersion + "." + ++pointVersion
+    def manifestContent = matcherVersionNumber.replaceAll("versionName=\"" + mNextVersionName + "\"")
+    manifestFile.write(manifestContent)
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'generateDebugBuildConfig') {
+        task.dependsOn 'incrementBuildCode'
+    } else if (task.name == 'generateReleaseBuildConfig') {
+        task.dependsOn 'incrementBuildCode'
+        task.dependsOn 'incrementVersionCode'
+    }
 }
