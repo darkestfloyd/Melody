@@ -11,7 +11,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/ripple_effect"
+        android:clickable="true">
 
         <ImageView
             android:id="@+id/cardImage"
@@ -36,15 +38,12 @@
             android:id="@+id/cardTitle"
             style="@style/Text.CardView.Title"
             android:layout_below="@id/cardImage"
-            android:background="@drawable/ripple_effect"
-            android:clickable="true"
             tools:text="hello" />
 
         <TextView
             android:id="@+id/cardSubTitle"
             style="@style/Text.CardView.SubTitle"
             android:layout_below="@id/cardTitle"
-            android:background="@drawable/ripple_effect"
             android:clickable="true"
             tools:text="helloSubText" />
 
