@@ -32,56 +32,39 @@ import android.view.View;
 
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
 
-    @Nullable
-    private View childView;
-    private int childPosition;
     private GestureDetector gestureDetector;
     private ClickListener clickListener;
 
     public RecyclerItemClickListener(Context c, ClickListener cl) {
-        gestureDetector = new GestureDetector(c, new GestureListener());
+        gestureDetector = new GestureDetector(c, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
         this.clickListener = cl;
     }
 
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-        childView = rv.findChildViewUnder(e.getX(), e.getY());
-        childPosition = rv.getChildAdapterPosition(childView);
-
-        return childView != null && gestureDetector.onTouchEvent(e);
+        View childView = rv.findChildViewUnder(e.getX(), e.getY());
+        if (gestureDetector.onTouchEvent(e) && childView != null)
+            clickListener.onClick(childView, rv.getChildAdapterPosition(childView));
+        return false;
     }
 
     @Override
     public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-        //Nothing to do here!
+
     }
 
     @Override
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-        //Nothing to do here!
+
     }
 
     public interface ClickListener {
         void onClick(View v, int position);
-
         void onLongPress(View v, int position);
-    }
-
-    protected class GestureListener extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            clickListener.onClick(childView, childPosition);
-            return true;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            clickListener.onLongPress(childView, childPosition);
-        }
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
     }
 }

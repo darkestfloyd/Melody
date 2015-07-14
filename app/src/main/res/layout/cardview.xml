@@ -5,21 +5,20 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     android:layout_margin="4dp"
     card_view:cardCornerRadius="2dp"
     card_view:cardElevation="2dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/ripple_effect"
-        android:clickable="true">
-
+        android:layout_height="match_parent">
+        
         <ImageView
             android:id="@+id/cardImage"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/cardImageHeight"
-            android:contentDescription="@string/image_context_main" />
+            android:layout_height="@dimen/cardImageHeight" />
 
         <ImageView
             android:id="@+id/cardMenuImage"
@@ -28,7 +27,6 @@
             android:layout_alignBottom="@+id/cardSubTitle"
             android:layout_alignParentEnd="true"
             android:adjustViewBounds="true"
-            android:contentDescription="@string/image_context_menu"
             android:paddingEnd="0dp"
             android:paddingStart="16dp"
             android:scaleType="center"

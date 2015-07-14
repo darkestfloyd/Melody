@@ -67,7 +67,7 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private static class TitleHelper {
+    public static class TitleHelper {
 
         public static ArrayList<String> getTitles() {
             ArrayList<String> titles = new ArrayList<String>();

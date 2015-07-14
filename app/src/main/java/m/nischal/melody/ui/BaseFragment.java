@@ -25,7 +25,6 @@ package m.nischal.melody.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -38,8 +37,7 @@ import java.util.ArrayList;
 
 import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
-import m.nischal.melody.Helper.LoaderHelper;
-import m.nischal.melody.Helper.QueryObject;
+import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.RecyclerItemClickListener;
 import m.nischal.melody.ObjectModels.Album;
 import m.nischal.melody.ObjectModels.Artist;
@@ -48,9 +46,7 @@ import m.nischal.melody.ObjectModels.Playlist;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
-import rx.Observable;
 import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
@@ -74,6 +70,7 @@ public class BaseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         context = view.getContext();
+        ObservableContainer.initAll(getActivity().getApplicationContext());
         rv = (RecyclerView) view.findViewById(R.id.recycler_view);
         rv.setLayoutManager(new GridLayoutManager(context, 2));
         populateList();
@@ -97,22 +94,20 @@ public class BaseFragment extends Fragment {
             subscriptions.unsubscribe();
     }
 
+    private void setAdapter() {
+        rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+    }
+
     private void populateList() {
         DebugHelper.LumberJack.v("populating list for fragment type: ", fragmentType);
-        QueryObject queryObject;
         switch (fragmentType) {
             case _BaseModel.ALBUMS:
-                queryObject = new QueryObject(Album.album_uri, Album.album_projections, null, null, MediaStore.Audio.Albums.ALBUM);
-
-                subscriptions.add(LoaderHelper
-                        .getObservable(getActivity().getApplicationContext(), queryObject)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(cursor -> Observable.from(Album.createAlbumsFromCursor(cursor)))
+                subscriptions.add(ObservableContainer.getAlbumObservable()
                         .subscribe(new Observer<Album>() {
                             @Override
                             public void onCompleted() {
                                 DebugHelper.LumberJack.d("onComplete called for albums.. populating adapter!");
-                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                                setAdapter();
                             }
 
                             @Override
@@ -128,17 +123,12 @@ public class BaseFragment extends Fragment {
                 break;
 
             case _BaseModel.SONGS:
-                queryObject = new QueryObject(Song.song_uri, Song.projections, Song.selection, null, MediaStore.Audio.Media.TITLE);
-
-                subscriptions.add(LoaderHelper
-                        .getObservable(getActivity().getApplicationContext(), queryObject)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(cursor -> Observable.from(Song.createSongsFromCursor(cursor)))
+                subscriptions.add(ObservableContainer.getSongObservable()
                         .subscribe(new Observer<Song>() {
                             @Override
                             public void onCompleted() {
                                 DebugHelper.LumberJack.d("onComplete called for songs.. populating adapter!");
-                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                                setAdapter();
                             }
 
                             @Override
@@ -154,17 +144,12 @@ public class BaseFragment extends Fragment {
                 break;
 
             case _BaseModel.ARTISTS:
-                queryObject = new QueryObject(Artist.artist_uri, Artist.projections, null, null, MediaStore.Audio.Artists.ARTIST);
-
-                subscriptions.add(LoaderHelper
-                        .getObservable(getActivity().getApplicationContext(), queryObject)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(cursor -> Observable.from(Artist.createArtistsFromCursor(cursor)))
+                subscriptions.add(ObservableContainer.getArtistObservable()
                         .subscribe(new Observer<Artist>() {
                             @Override
                             public void onCompleted() {
                                 DebugHelper.LumberJack.d("onComplete called for artists.. populating adapter!");
-                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                                setAdapter();
                             }
 
                             @Override
@@ -180,17 +165,12 @@ public class BaseFragment extends Fragment {
                 break;
 
             case _BaseModel.PLAYLISTS:
-                queryObject = new QueryObject(Playlist.playlist_uri, Playlist.projections, null, null, MediaStore.Audio.Playlists.NAME);
-
-                subscriptions.add(LoaderHelper
-                        .getObservable(getActivity().getApplicationContext(), queryObject)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(cursor -> Observable.from(Playlist.createPlaylistsFromCursor(cursor)))
+                subscriptions.add(ObservableContainer.getPlaylistObservable()
                         .subscribe(new Observer<Playlist>() {
                             @Override
                             public void onCompleted() {
                                 DebugHelper.LumberJack.d("onComplete called for playlists.. populating adapter!");
-                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                                setAdapter();
                             }
 
                             @Override
@@ -206,17 +186,12 @@ public class BaseFragment extends Fragment {
                 break;
 
             case _BaseModel.GENERS:
-                queryObject = new QueryObject(Genre.genres_uri, Genre.projections, null, null, MediaStore.Audio.Genres.NAME);
-
-                subscriptions.add(LoaderHelper
-                        .getObservable(getActivity().getApplicationContext(), queryObject)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(cursor -> Observable.from(Genre.createGenersFromCursor(cursor)))
+                subscriptions.add(ObservableContainer.getGenreObservable()
                         .subscribe(new Observer<Genre>() {
                             @Override
                             public void onCompleted() {
                                 DebugHelper.LumberJack.d("onComplete called for genres.. populating adapter!");
-                                rv.setAdapter(new RecyclerViewAdapter(baseModelArrayList));
+                                setAdapter();
                             }
 
                             @Override
