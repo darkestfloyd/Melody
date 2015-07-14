@@ -11,7 +11,7 @@ import android.widget.TextView;
 /**
  * Created by Cyplops on 08-Jul-15.
  */
-public class demo extends Fragment{
+public class demo extends Fragment {
 
     @Nullable
     @Override
@@ -22,6 +22,6 @@ public class demo extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((TextView)view.findViewById(android.R.id.text1)).setText("pi ka boo! :P");
+        ((TextView) view.findViewById(android.R.id.text1)).setText("pi ka boo! :P");
     }
 }

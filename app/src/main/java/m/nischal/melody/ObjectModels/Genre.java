@@ -29,8 +29,8 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
-import m.nischal.melody.RecyclerViewAdapter;
 
 /**
  * <code>Genres</code>
@@ -104,6 +104,6 @@ public final class Genre extends _BaseModel {
      */
     @Override
     public void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder) {
-        holder.textView.setText(genre_name);
+        holder.titleText.setText(genre_name);
     }
 }

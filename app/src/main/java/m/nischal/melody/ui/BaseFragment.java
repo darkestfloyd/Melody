@@ -23,11 +23,12 @@ package m.nischal.melody.ui;
  *    THE SOFTWARE.
  */
 
+import android.content.Context;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,9 +36,11 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.LoaderHelper;
 import m.nischal.melody.Helper.QueryObject;
+import m.nischal.melody.Helper.RecyclerItemClickListener;
 import m.nischal.melody.ObjectModels.Album;
 import m.nischal.melody.ObjectModels.Artist;
 import m.nischal.melody.ObjectModels.Genre;
@@ -45,7 +48,6 @@ import m.nischal.melody.ObjectModels.Playlist;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
-import m.nischal.melody.RecyclerViewAdapter;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -57,6 +59,7 @@ public class BaseFragment extends Fragment {
     private ArrayList<_BaseModel> baseModelArrayList = new ArrayList<>();
     private RecyclerView rv;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private Context context;
 
     @Nullable
     @Override
@@ -70,9 +73,21 @@ public class BaseFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        context = view.getContext();
         rv = (RecyclerView) view.findViewById(R.id.recycler_view);
-        rv.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        rv.setLayoutManager(new GridLayoutManager(context, 2));
         populateList();
+        rv.addOnItemTouchListener(new RecyclerItemClickListener(context, new RecyclerItemClickListener.ClickListener() {
+            @Override
+            public void onClick(View v, int position) {
+                DebugHelper.LumberJack.d("recycler view item click on position: ", position + 1);
+            }
+
+            @Override
+            public void onLongPress(View v, int position) {
+                DebugHelper.LumberJack.d("recycler view item long press on position: ", position + 1);
+            }
+        }));
     }
 
     @Override

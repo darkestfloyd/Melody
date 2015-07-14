@@ -1,4 +1,4 @@
-package m.nischal.melody.ObjectModels;
+package m.nischal.melody.Helper;
 
 /*The MIT License (MIT)
  *
@@ -23,33 +23,20 @@ package m.nischal.melody.ObjectModels;
  *    THE SOFTWARE.
  */
 
-import m.nischal.melody.Adapters.RecyclerViewAdapter;
+import android.content.Context;
 
-/**
- * <h>BaseModel</h>
- * <p>
- * A general class to represent all ObjectModels. No particular use.
- */
-public abstract class _BaseModel {
+import com.squareup.picasso.Picasso;
 
-    public static final String VIEW_PAGER_POSITION_STRING = "m.nischal.melody.Helper.LoaderHelper.position";
+public class PicassoHelper {
 
-    public static final int SONGS = 0;
-    public static final int ALBUMS = 1;
-    public static final int ARTISTS = 2;
-    public static final int PLAYLISTS = 3;
-    public static final int GENERS = 4;
+    public static Picasso picassoWrapper;
 
-    /**
-     * Returns a String for Debugging.
-     */
-    public abstract String toString();
+    public static void initPicasso(Context context) {
+        picassoWrapper = Picasso.with(context);
+        picassoWrapper.setLoggingEnabled(true);
+    }
 
-    /**
-     * Method to set values in the {@link RecyclerViewAdapter.RVViewHolder} holder.
-     *
-     * @param holder The holder to inject the values in.
-     */
-    public abstract void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder);
-
+    public static Picasso getPicassoWrapper() {
+        return picassoWrapper;
+    }
 }

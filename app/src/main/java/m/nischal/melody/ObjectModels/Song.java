@@ -29,8 +29,8 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
-import m.nischal.melody.RecyclerViewAdapter;
 
 /**
  * <code>Song</code>
@@ -216,6 +216,6 @@ public final class Song extends _BaseModel {
      */
     @Override
     public void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder) {
-        holder.textView.setText(song_title);
+        holder.titleText.setText(song_title);
     }
 }

@@ -1,4 +1,4 @@
-package m.nischal.melody;
+package m.nischal.melody.Adapters;
 
 /*The MIT License (MIT)
  *
@@ -27,11 +27,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import m.nischal.melody.ObjectModels._BaseModel;
+import m.nischal.melody.R;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RVViewHolder> {
 
@@ -44,7 +46,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public RVViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new RVViewHolder(LayoutInflater
-                .from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false));
+                .from(parent.getContext()).inflate(R.layout.cardview_new, parent, false));
     }
 
     @Override
@@ -59,11 +61,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class RVViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textView;
+        public TextView titleText;
+        public TextView subTitleText;
+        public ImageView imageView;
 
         public RVViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView;
+            titleText = (TextView) itemView.findViewById(R.id.cardTitle);
+            subTitleText = (TextView) itemView.findViewById(R.id.cardSubTitle);
+            imageView = (ImageView) itemView.findViewById(R.id.cardImage);
         }
     }
 

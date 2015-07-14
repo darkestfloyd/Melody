@@ -4,6 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
     </style>
+
     <style name="AppTheme.TranslucentWindow" parent="AppTheme" />
 
     <style name="Text" parent="TextAppearance.AppCompat.Title">

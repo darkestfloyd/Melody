@@ -27,7 +27,6 @@ import android.content.Context;
 import android.database.Cursor;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class LoaderHelper {
@@ -35,7 +34,7 @@ public class LoaderHelper {
     /**
      * Helper class to reduce boilerplate code.
      *
-     * @param context Activity Context.
+     * @param context     Activity Context.
      * @param queryObject QueryObject object.
      * @return Observable og Cursor
      */

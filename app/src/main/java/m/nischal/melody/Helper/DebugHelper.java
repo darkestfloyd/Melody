@@ -31,7 +31,9 @@ import rx.Observer;
 
 public class DebugHelper {
 
-    public static <T> Observer<T> getDebugObserver(){
+    private static final Boolean LOG_ENABLE = true;
+
+    public static <T> Observer<T> getDebugObserver() {
         return new Observer<T>() {
             @Override
             public void onCompleted() {
@@ -51,11 +53,14 @@ public class DebugHelper {
         };
     }
 
-    private static final Boolean LOG_ENABLE = true;
+    public static void overdose(Context c, String s) {
+        LumberJack.d(s);
+        Toaster.show(c, s);
+    }
 
     public static class LumberJack {
 
-        public static final String TAG = "m.nischal.TAG";
+        public static final String TAG = "m.nischal.melody.TAG";
 
         public static void d(String s) {
             if (LOG_ENABLE) Log.d(TAG, s);

@@ -1,8 +1,22 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+
+    <!-- Margins and padding. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="navigation_header_height">140dp</dimen>
     <dimen name="padding_left_right">16dp</dimen>
     <dimen name="navigation_text_padding">108dp</dimen>
+    <dimen name="padding_top_small">8dp</dimen>
+    <dimen name="padding_top_full">16dp</dimen>
+
+    <!-- View dimensions (height and width) -->
+    <dimen name="navigation_header_height">140dp</dimen>
+
+    <!-- Card View specific. -->
+    <dimen name="cardTitlePaddingTop">24dp</dimen>
+    <dimen name="cardTitlePaddingBottom_withoutActions">24dp</dimen>
+    <dimen name="cardTitlePaddingBottom_withActions">16dp</dimen>
+    <dimen name="cardImageHeight">175dp</dimen>
+    <dimen name="cardListHeight">68dp</dimen>
+
 </resources>
