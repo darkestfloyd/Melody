@@ -20,27 +20,32 @@
             android:contentDescription="@string/image_context_main" />
 
         <ImageView
+            android:id="@+id/cardMenuImage"
             android:layout_width="@dimen/cardButton_Width"
             android:layout_height="@dimen/cardList_Height"
             android:layout_alignBottom="@+id/cardSubTitle"
             android:layout_alignParentEnd="true"
             android:adjustViewBounds="true"
             android:contentDescription="@string/image_context_menu"
-            android:paddingStart="16dp"
             android:paddingEnd="0dp"
+            android:paddingStart="16dp"
             android:scaleType="center"
-            android:src="@drawable/ic_more_vert_black_24dp" />
+            android:src="@drawable/ic_more_vert_black_18dp" />
 
         <TextView
             android:id="@+id/cardTitle"
             style="@style/Text.CardView.Title"
             android:layout_below="@id/cardImage"
+            android:background="@drawable/ripple_effect"
+            android:clickable="true"
             tools:text="hello" />
 
         <TextView
             android:id="@+id/cardSubTitle"
             style="@style/Text.CardView.SubTitle"
             android:layout_below="@id/cardTitle"
+            android:background="@drawable/ripple_effect"
+            android:clickable="true"
             tools:text="helloSubText" />
 
     </RelativeLayout>

@@ -33,6 +33,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
+import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
@@ -59,6 +60,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         String imagePath = b.getImagePath();
         if (imagePath != null)
             PicassoHelper.picassoWrapper.load(new File(imagePath)).into(holder.imageView);
+        holder.menuImage.setOnClickListener(view -> DebugHelper.overdose(holder.menuImage.getContext(), "click on menu"));
     }
 
     @Override
@@ -71,12 +73,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public TextView titleText;
         public TextView subTitleText;
         public ImageView imageView;
+        public ImageView menuImage;
 
         public RVViewHolder(View itemView) {
             super(itemView);
             titleText = (TextView) itemView.findViewById(R.id.cardTitle);
             subTitleText = (TextView) itemView.findViewById(R.id.cardSubTitle);
             imageView = (ImageView) itemView.findViewById(R.id.cardImage);
+            menuImage = (ImageView) itemView.findViewById(R.id.cardMenuImage);
         }
     }
 
