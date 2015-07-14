@@ -30,8 +30,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 
@@ -51,7 +53,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(RVViewHolder holder, int position) {
-        baseModelArrayList.get(position).injectIntoHolder(holder);
+        _BaseModel b = baseModelArrayList.get(position);
+        holder.titleText.setText(b.getTitle());
+        holder.subTitleText.setText(b.getSubTitle());
+        String imagePath = b.getImagePath();
+        if (imagePath != null)
+            PicassoHelper.picassoWrapper.load(new File(imagePath)).into(holder.imageView);
     }
 
     @Override

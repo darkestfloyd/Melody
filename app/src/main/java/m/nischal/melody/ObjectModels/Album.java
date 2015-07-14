@@ -27,12 +27,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
-import m.nischal.melody.Helper.PicassoHelper;
 
 /**
  * <code>Album</code>
@@ -123,11 +120,24 @@ public final class Album extends _BaseModel {
      * {@inheritDoc}
      */
     @Override
-    public void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder) {
-        holder.titleText.setText(album);
-        holder.subTitleText.setText(album_artist);
-        if (album_art != null)
-            PicassoHelper.getPicassoWrapper().load(new File(album_art)).into(holder.imageView);
+    public String getTitle() {
+        return album;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSubTitle() {
+        return album_artist;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getImagePath() {
+        return album_art;
     }
 
     public String getAlbum_first_year() {

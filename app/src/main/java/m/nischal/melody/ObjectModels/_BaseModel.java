@@ -46,10 +46,21 @@ public abstract class _BaseModel {
     public abstract String toString();
 
     /**
-     * Method to set values in the {@link RecyclerViewAdapter.RVViewHolder} holder.
-     *
-     * @param holder The holder to inject the values in.
+     * Method to get main Title of object.
+     * @return Title
      */
-    public abstract void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder);
+    public abstract String getTitle();
+
+    /**
+     * Method to get sub Title of object.
+     * @return Sub Title
+     */
+    public abstract String getSubTitle();
+
+    /**
+     * Method to get image path of object.
+     * @return Image Path
+     */
+    public abstract String getImagePath();
 
 }

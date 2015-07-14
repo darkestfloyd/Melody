@@ -29,7 +29,6 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
 
 /**
@@ -120,7 +119,23 @@ public final class Playlist extends _BaseModel {
      * {@inheritDoc}
      */
     @Override
-    public void injectIntoHolder(RecyclerViewAdapter.RVViewHolder holder) {
-        holder.titleText.setText(playist_name);
+    public String getTitle() {
+        return playist_name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSubTitle() {
+        return "";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getImagePath() {
+        return null;
     }
 }
