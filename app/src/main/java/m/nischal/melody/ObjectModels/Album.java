@@ -127,7 +127,7 @@ public final class Album extends _BaseModel {
         holder.titleText.setText(album);
         holder.subTitleText.setText(album_artist);
         if (album_art != null)
-            PicassoHelper.getPicassoWrapper().load(new File(album_art)).fit().into(holder.imageView);
+            PicassoHelper.getPicassoWrapper().load(new File(album_art)).into(holder.imageView);
     }
 
     public String getAlbum_first_year() {

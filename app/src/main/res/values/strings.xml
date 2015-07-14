@@ -2,4 +2,7 @@
     <string name="app_name">Melody</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
+
+    <string name="image_context_main">image</string>
+    <string name="image_context_menu">menu</string>
 </resources>

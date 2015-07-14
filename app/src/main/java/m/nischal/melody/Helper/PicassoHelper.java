@@ -33,7 +33,7 @@ public class PicassoHelper {
 
     public static void initPicasso(Context context) {
         picassoWrapper = Picasso.with(context);
-        picassoWrapper.setLoggingEnabled(true);
+        picassoWrapper.setLoggingEnabled(false);
     }
 
     public static Picasso getPicassoWrapper() {

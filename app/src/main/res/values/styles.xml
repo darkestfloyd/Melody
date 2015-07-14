@@ -15,4 +15,27 @@
         <item name="android:color">@color/primary_text</item>
     </style>
 
+    <style name="Text.CardView" parent="TextAppearance.AppCompat">
+        <item name="android:paddingLeft">@dimen/cardViewTextPaddingLeft</item>
+        <item name="android:paddingRight">@dimen/cardViewTextPaddingRight</item>
+        <item name="android:layout_marginEnd">@dimen/cardViewMargin</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:lines">1</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Text.CardView.Title" parent="Text.CardView">
+        <item name="android:textSize">@dimen/cardViewTextSize_Title</item>
+        <item name="android:paddingTop">@dimen/cardViewTextPaddingTop</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text.CardView.SubTitle" parent="Text.CardView">
+        <item name="android:textSize">@dimen/cardViewTextSize_SubTitle</item>
+        <item name="android:paddingBottom">@dimen/cardViewTextPaddingBottom</item>
+    </style>
+
 </resources>

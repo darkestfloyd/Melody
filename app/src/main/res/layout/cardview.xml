@@ -1,59 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="230dp"
+    android:layout_height="wrap_content"
     android:layout_margin="4dp"
     card_view:cardCornerRadius="2dp"
     card_view:cardElevation="2dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/cardImage"
             android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:background="@android:color/holo_blue_dark" />
+            android:layout_height="@dimen/cardImageHeight"
+            android:contentDescription="@string/image_context_main" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:paddingLeft="@dimen/padding_left_right"
-            android:paddingRight="@dimen/padding_left_right"
-            android:paddingTop="@dimen/padding_top_small">
+        <ImageView
+            android:layout_width="@dimen/cardButton_Width"
+            android:layout_height="@dimen/cardList_Height"
+            android:layout_alignBottom="@+id/cardSubTitle"
+            android:layout_alignParentEnd="true"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/image_context_menu"
+            android:paddingStart="16dp"
+            android:paddingEnd="0dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_more_vert_black_24dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="5"
-                android:orientation="vertical">
+        <TextView
+            android:id="@+id/cardTitle"
+            style="@style/Text.CardView.Title"
+            android:layout_below="@id/cardImage"
+            tools:text="hello" />
 
-                <TextView
-                    android:id="@+id/cardTitle"
-                    style="@style/Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/cardSubTitle"
+            style="@style/Text.CardView.SubTitle"
+            android:layout_below="@id/cardTitle"
+            tools:text="helloSubText" />
 
-                <TextView
-                    android:id="@+id/cardSubTitle"
-                    style="@style/Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:background="@drawable/ic_more_vert_black_18dp"
-                android:padding="@dimen/padding_left_right" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>

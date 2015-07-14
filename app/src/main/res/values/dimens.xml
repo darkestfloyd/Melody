@@ -17,6 +17,14 @@
     <dimen name="cardTitlePaddingBottom_withoutActions">24dp</dimen>
     <dimen name="cardTitlePaddingBottom_withActions">16dp</dimen>
     <dimen name="cardImageHeight">175dp</dimen>
-    <dimen name="cardListHeight">68dp</dimen>
+    <dimen name="cardList_Height">52dp</dimen>
+    <dimen name="cardButton_Width">56dp</dimen>
+    <dimen name="cardViewTextPaddingLeft">8dp</dimen>
+    <dimen name="cardViewTextPaddingRight">16dp</dimen>
+    <dimen name="cardViewTextPaddingTop">8dp</dimen>
+    <dimen name="cardViewTextPaddingBottom">8dp</dimen>
+    <dimen name="cardViewMargin">20dp</dimen>
+    <dimen name="cardViewTextSize_Title">16sp</dimen>
+    <dimen name="cardViewTextSize_SubTitle">14sp</dimen>
 
 </resources>
