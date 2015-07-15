@@ -24,7 +24,6 @@ package m.nischal.melody.Helper;
  */
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -34,12 +33,20 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
 
     private GestureDetector gestureDetector;
     private ClickListener clickListener;
+    private View childView;
+    private int childPositon;
 
     public RecyclerItemClickListener(Context c, ClickListener cl) {
         gestureDetector = new GestureDetector(c, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
+                clickListener.onClick(childView, childPositon);
                 return true;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                cl.onLongPress(childView, childPositon);
             }
         });
         this.clickListener = cl;
@@ -47,9 +54,11 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
 
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-        View childView = rv.findChildViewUnder(e.getX(), e.getY());
-        if (gestureDetector.onTouchEvent(e) && childView != null)
-            clickListener.onClick(childView, rv.getChildAdapterPosition(childView));
+        childView = rv.findChildViewUnder(e.getX(), e.getY());
+        if (childView == null)
+            return false;
+        childPositon = rv.getChildAdapterPosition(childView);
+        gestureDetector.onTouchEvent(e);
         return false;
     }
 
@@ -65,6 +74,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
 
     public interface ClickListener {
         void onClick(View v, int position);
+
         void onLongPress(View v, int position);
     }
 }

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 
 import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.PicassoHelper;
+import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 
@@ -60,6 +61,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         String imagePath = b.getImagePath();
         if (imagePath != null)
             PicassoHelper.picassoWrapper.load(new File(imagePath)).into(holder.imageView);
+        if(b instanceof Song)
+            DebugHelper.LumberJack.d("in adapter " + imagePath);
         holder.menuImage.setOnClickListener(view -> DebugHelper.overdose(holder.menuImage.getContext(), "click on menu"));
     }
 

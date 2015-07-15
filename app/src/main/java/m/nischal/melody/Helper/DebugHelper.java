@@ -62,6 +62,10 @@ public class DebugHelper {
 
         public static final String TAG = "m.nischal.melody.TAG";
 
+        public static void e(Throwable t) {
+            if (LOG_ENABLE) Log.e(TAG, t.getMessage());
+        }
+
         public static void d(String s) {
             if (LOG_ENABLE) Log.d(TAG, s);
         }
@@ -72,6 +76,10 @@ public class DebugHelper {
 
         public static void v(String s) {
             if (LOG_ENABLE) Log.v(TAG, s);
+        }
+
+        public static void w(String s) {
+            if (LOG_ENABLE) Log.w(TAG, s);
         }
 
         public static void d(String s, int i) {
@@ -86,6 +94,10 @@ public class DebugHelper {
             e(s + String.valueOf(i));
         }
 
+        public static void w(String s, int i) {
+            w(s + String.valueOf(i));
+        }
+
         public static void d(String s, Boolean b) {
             d(s + String.valueOf(b));
         }
@@ -96,6 +108,10 @@ public class DebugHelper {
 
         public static void e(String s, Boolean b) {
             e(s + String.valueOf(b));
+        }
+
+        public static void w(String s, Boolean b) {
+            w(s + String.valueOf(b));
         }
 
     }

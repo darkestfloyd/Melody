@@ -36,7 +36,4 @@ public class PicassoHelper {
         picassoWrapper.setLoggingEnabled(false);
     }
 
-    public static Picasso getPicassoWrapper() {
-        return picassoWrapper;
-    }
 }

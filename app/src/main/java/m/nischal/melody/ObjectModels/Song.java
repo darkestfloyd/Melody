@@ -30,6 +30,7 @@ import android.provider.MediaStore;
 import java.util.ArrayList;
 
 import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.ObservableContainer;
 
 /**
  * <code>Song</code>
@@ -231,6 +232,12 @@ public final class Song extends _BaseModel {
      */
     @Override
     public String getImagePath() {
-        return null;
+        final StringBuilder path = new StringBuilder();
+        ObservableContainer
+                .getAlbumArrayListObservable()
+                .filter(album -> album.getAlbum_name().equals(song_album))
+                .map(Album::getAlbum_art)
+                .subscribe(path::append);
+        return path.toString();
     }
 }

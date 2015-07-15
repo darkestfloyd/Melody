@@ -56,23 +56,23 @@ public final class Album extends _BaseModel {
             MediaStore.Audio.Albums.LAST_YEAR,
             MediaStore.Audio.Albums.NUMBER_OF_SONGS,
     };
-    final private String album_id, album, album_art, album_artist, album_number_of_songs, album_first_year, album_last_year;
+    final private String album_id, album_name, album_art, album_artist, album_number_of_songs, album_first_year, album_last_year;
 
     /**
      * Constructor for Album object.
      *
-     * @param album_id              The id for the album.
-     * @param album                 The album on which the audio file appears, if any.
-     * @param album_art             Cached album art.
-     * @param album_artist          The artist whose songs appear on this album.
-     * @param album_first_year      The year in which the earliest songs on this album were released.
-     * @param album_last_year       The year in which the latest songs on this album were released.
-     * @param album_number_of_songs The number of songs on this album.
+     * @param album_id              The id for the album_name.
+     * @param album_name            The album_name on which the audio file appears, if any.
+     * @param album_art             Cached album_name art.
+     * @param album_artist          The artist whose songs appear on this album_name.
+     * @param album_first_year      The year in which the earliest songs on this album_name were released.
+     * @param album_last_year       The year in which the latest songs on this album_name were released.
+     * @param album_number_of_songs The number of songs on this album_name.
      */
-    private Album(String album_id, String album, String album_art, String album_artist
+    private Album(String album_id, String album_name, String album_art, String album_artist
             , String album_first_year, String album_last_year, String album_number_of_songs) {
         this.album_id = album_id;
-        this.album = album;
+        this.album_name = album_name;
         this.album_art = album_art;
         this.album_artist = album_artist;
         this.album_number_of_songs = album_number_of_songs;
@@ -84,7 +84,7 @@ public final class Album extends _BaseModel {
      * Method to get list of all albums from cursor.
      *
      * @param c Cursor to pull values from.
-     * @return ArrayList of the album.
+     * @return ArrayList of the album_name.
      */
     public static ArrayList<Album> createAlbumsFromCursor(Cursor c) {
         ArrayList<Album> albums = new ArrayList<>();
@@ -113,7 +113,7 @@ public final class Album extends _BaseModel {
      */
     @Override
     public String toString() {
-        return "{[" + album + "], [" + album_id + "], [" + album_artist + "]}";
+        return "{[" + album_name + "], [" + album_id + "], [" + album_artist + "]}";
     }
 
     /**
@@ -121,7 +121,7 @@ public final class Album extends _BaseModel {
      */
     @Override
     public String getTitle() {
-        return album;
+        return album_name;
     }
 
     /**
@@ -152,8 +152,8 @@ public final class Album extends _BaseModel {
         return album_id;
     }
 
-    public String getAlbum() {
-        return album;
+    public String getAlbum_name() {
+        return album_name;
     }
 
     public String getAlbum_art() {

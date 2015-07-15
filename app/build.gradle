@@ -68,7 +68,11 @@ task('incrementBuildCode') << {
     def majorVersion = Integer.parseInt(matcherVersionNumber.group(1))
     def minorVersion = Integer.parseInt(matcherVersionNumber.group(2))
     def pointVersion = Integer.parseInt(matcherVersionNumber.group(3))
-    def mNextVersionName = majorVersion + "." + minorVersion + "." + ++pointVersion
+    def newPoint = ++pointVersion
+    def newVersionName = majorVersion + "." + minorVersion + "."
+    if (newPoint < 10) newVersionName += "00"
+    else if (newPoint < 100) newVersionName += "0"
+    def mNextVersionName = newVersionName + newPoint
     def manifestContent = matcherVersionNumber.replaceAll("versionName=\"" + mNextVersionName + "\"")
     manifestFile.write(manifestContent)
 }

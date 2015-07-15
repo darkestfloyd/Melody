@@ -19,6 +19,7 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
@@ -41,6 +42,7 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         PicassoHelper.initPicasso(getActivity().getApplicationContext());
+        ObservableContainer.initAll(getActivity().getApplicationContext());
 
         titles = TitleHelper.getTitles();
 
