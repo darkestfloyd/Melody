@@ -59,27 +59,27 @@ task('incrementVersionCode') << {
     manifestFile.write(manifestContent)
 }
 
-task('incrementBuildCode') << {
+task('incrementPatchVersion') << {
     def manifestFile = file("src/main/AndroidManifest.xml")
-    def patternVersionNumber = Pattern.compile("versionName=\"(\\d+)\\.(\\d+)\\.(\\d+)\"")
+    def patternVersionNumber = Pattern.compile("versionName=\"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\"")
     def manifestText = manifestFile.getText()
     def matcherVersionNumber = patternVersionNumber.matcher(manifestText)
     matcherVersionNumber.find()
     def majorVersion = Integer.parseInt(matcherVersionNumber.group(1))
     def minorVersion = Integer.parseInt(matcherVersionNumber.group(2))
     def pointVersion = Integer.parseInt(matcherVersionNumber.group(3))
-    def newPoint = ++pointVersion
-    def newVersionName = majorVersion + "." + minorVersion + "."
-    if (newPoint < 10) newVersionName += "00"
-    else if (newPoint < 100) newVersionName += "0"
-    def mNextVersionName = newVersionName + newPoint
+    def patchVersion = Integer.parseInt(matcherVersionNumber.group(4))
+    def newPatch = ++patchVersion
+    def newVersionName = majorVersion + "." + minorVersion + "." + pointVersion + "."
+    if (newPatch < 10) newVersionName += "0"
+    def mNextVersionName = newVersionName + newPatch
     def manifestContent = matcherVersionNumber.replaceAll("versionName=\"" + mNextVersionName + "\"")
     manifestFile.write(manifestContent)
 }
 
 tasks.whenTaskAdded { task ->
     if (task.name == 'generateDebugBuildConfig') {
-        task.dependsOn 'incrementBuildCode'
+        task.dependsOn 'incrementPatchVersion'
     } else if (task.name == 'generateReleaseBuildConfig') {
         task.dependsOn 'incrementBuildCode'
         task.dependsOn 'incrementVersionCode'
