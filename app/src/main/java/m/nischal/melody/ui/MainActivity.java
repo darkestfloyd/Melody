@@ -6,10 +6,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 
 import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.ObservableContainer;
+import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.R;
 import rx.Subscription;
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         setContentView(R.layout.drawer);
 
         initBus();
+        PicassoHelper.initPicasso(this);
+        ObservableContainer.initAll(this);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, null, R.string.drawer_open, R.string.drawer_close);
 
@@ -77,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .subscribe(busClass -> {
                             if (busClass instanceof RxBus.BusClass.RecyclerViewItemClick)
                                 replaceFragment();
+                            if (busClass instanceof RxBus.BusClass.TapEvent)
+                                drawerLayout.openDrawer(Gravity.LEFT);
                         }
                 );
         subscriptions.add(sc);

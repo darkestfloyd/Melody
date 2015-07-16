@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -19,8 +20,8 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.ObservableContainer;
-import m.nischal.melody.Helper.PicassoHelper;
+import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 
@@ -38,7 +39,6 @@ public class MainFragment extends Fragment {
             Window w = getActivity().getWindow();
             w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             w.setStatusBarColor(getResources().getColor(R.color.primary_dark));
         }
     }
@@ -53,12 +53,10 @@ public class MainFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        PicassoHelper.initPicasso(getActivity().getApplicationContext());
-        ObservableContainer.initAll(getActivity().getApplicationContext());
-
         titles = TitleHelper.getTitles();
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
@@ -69,9 +67,27 @@ public class MainFragment extends Fragment {
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setIcon(R.drawable.ic_menu_black_24dp);
+            //actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        RxBus bus = RxBus.getBus();
+        DebugHelper.LumberJack.d("click at menu");
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                DebugHelper.LumberJack.d("click at icon");
+                bus.publish(new RxBus.BusClass.TapEvent());
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static class TitleHelper {

@@ -42,8 +42,6 @@ import m.nischal.melody.Helper.RecyclerItemClickListener;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
-import rx.Observable;
-import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
