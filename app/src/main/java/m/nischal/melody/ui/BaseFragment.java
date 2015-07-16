@@ -42,6 +42,8 @@ import m.nischal.melody.Helper.RecyclerItemClickListener;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
+import rx.Observable;
+import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
@@ -64,27 +66,11 @@ public class BaseFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rxBus = RxBus.getBus();
-        DebugHelper.LumberJack.d("bus id in fragment: ", rxBus.hashCode());
         Context context = getActivity().getApplicationContext();
         rv = (RecyclerView) view.findViewById(R.id.recycler_view);
         rv.setLayoutManager(new GridLayoutManager(context, 2));
         populateList();
-        rv.addOnItemTouchListener(new RecyclerItemClickListener(context, new RecyclerItemClickListener.ClickListener() {
-            @Override
-            public void onClick(View v, int position) {
-                DebugHelper.LumberJack.d("recycler view item click on position: ", position + 1);
-                if (rxBus.hasObservers()) {
-                    DebugHelper.LumberJack.d("bus has observers.. publishing now!");
-                    rxBus.publish(new RxBus.BusClass.TapEvent());
-                }
-            }
-
-            @Override
-            public void onLongPress(View v, int position) {
-                DebugHelper.LumberJack.d("recycler view item long press on position: ", position + 1);
-            }
-        }));
+        rv.addOnItemTouchListener(new RecyclerItemClickListener(context));
     }
 
     @Override

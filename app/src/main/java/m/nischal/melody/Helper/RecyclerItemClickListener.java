@@ -32,32 +32,33 @@ import android.view.View;
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
 
     private GestureDetector gestureDetector;
-    private ClickListener clickListener;
-    private View childView;
-    private int childPositon;
+    private RxBus bus;
+    private Integer childPosition;
 
-    public RecyclerItemClickListener(Context c, ClickListener cl) {
+    public RecyclerItemClickListener(Context c) {
+        bus = RxBus.getBus();
         gestureDetector = new GestureDetector(c, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
-                clickListener.onClick(childView, childPositon);
+                DebugHelper.LumberJack.i("click at: ", childPosition);
+                bus.putValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK, childPosition);
+                bus.publish(new RxBus.BusClass.RecyclerViewItemClick());
                 return true;
             }
 
             @Override
             public void onLongPress(MotionEvent e) {
-                cl.onLongPress(childView, childPositon);
+                bus.publish(new RxBus.BusClass.TapEvent());
             }
         });
-        this.clickListener = cl;
     }
 
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-        childView = rv.findChildViewUnder(e.getX(), e.getY());
+        View childView = rv.findChildViewUnder(e.getX(), e.getY());
         if (childView == null)
             return false;
-        childPositon = rv.getChildAdapterPosition(childView);
+        childPosition = rv.getChildAdapterPosition(childView);
         gestureDetector.onTouchEvent(e);
         return false;
     }
@@ -70,11 +71,5 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
     @Override
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
-    }
-
-    public interface ClickListener {
-        void onClick(View v, int position);
-
-        void onLongPress(View v, int position);
     }
 }

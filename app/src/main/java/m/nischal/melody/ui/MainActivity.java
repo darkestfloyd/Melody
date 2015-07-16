@@ -6,10 +6,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
 
 import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.R;
 import rx.Subscription;
@@ -60,16 +60,25 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
             subscriptions.unsubscribe();
     }
 
+    private void replaceFragment() {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container, new DetailsFragment()).addToBackStack(null);
+        fragmentTransaction.commit();
+        int x = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK);
+        DebugHelper.LumberJack.i("child view click position: ", x);
+        ObservableContainer.getAlbumArrayListObservable().take(x + 1).last().subscribe(album -> DebugHelper.LumberJack.i(album.getAlbum_name()));
+    }
+
     private void initBus() {
         rxBus = RxBus.getBus();
-        DebugHelper.LumberJack.d("bus id in activity: ", rxBus.hashCode());
+        DebugHelper.LumberJack.i("bus id in activity: ", rxBus.hashCode());
         Subscription sc = rxBus
                 .toObserverable()
                 .subscribe(busClass -> {
-                    DebugHelper.LumberJack.d("event received! doing action..");
-                    if (busClass instanceof RxBus.BusClass.TapEvent)
-                        drawerLayout.openDrawer(Gravity.LEFT);
-                });
+                            if (busClass instanceof RxBus.BusClass.RecyclerViewItemClick)
+                                replaceFragment();
+                        }
+                );
         subscriptions.add(sc);
     }
 
