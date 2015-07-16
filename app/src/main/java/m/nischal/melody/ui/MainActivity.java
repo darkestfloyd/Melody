@@ -6,9 +6,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 
+import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.R;
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Cyplops on 08-Jul-15.
@@ -17,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
+    private RxBus rxBus;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +43,31 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
 
+        initBus();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, null, R.string.drawer_open, R.string.drawer_close);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, new MainFragment());
         fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (subscriptions.hasSubscriptions())
+            subscriptions.unsubscribe();
+    }
+
+    private void initBus() {
+        rxBus = RxBus.getBus();
+        Subscription sc = rxBus
+                .toObserverable()
+                .subscribe(busClass -> {
+                    if (busClass instanceof RxBus.BusClass.TapEvent)
+                        drawerLayout.openDrawer(Gravity.LEFT);
+                });
+        subscriptions.add(sc);
     }
 
     @Override
@@ -64,4 +89,5 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     public void onDrawerStateChanged(int newState) {
         actionBarDrawerToggle.onDrawerStateChanged(newState);
     }
+
 }
