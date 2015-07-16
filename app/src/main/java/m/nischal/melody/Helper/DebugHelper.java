@@ -66,6 +66,10 @@ public class DebugHelper {
             if (LOG_ENABLE) Log.e(TAG, t.getMessage());
         }
 
+        public static void wtf(String s) {
+            if (LOG_ENABLE) Log.d(TAG, s);
+        }
+
         public static void d(String s) {
             if (LOG_ENABLE) Log.d(TAG, s);
         }
@@ -82,38 +86,57 @@ public class DebugHelper {
             if (LOG_ENABLE) Log.w(TAG, s);
         }
 
-        public static void d(String s, int i) {
-            d(s + String.valueOf(i));
+        public static void i(String s) {
+            if (LOG_ENABLE) Log.i(TAG, s);
         }
 
-        public static void v(String s, int i) {
-            v(s + String.valueOf(i));
+        public static void wtf(String s, int i) {
+            wtf(s + String.valueOf(i));
+        }
+
+        public static void d(String s, int i) {
+            d(s + String.valueOf(i));
         }
 
         public static void e(String s, int i) {
             e(s + String.valueOf(i));
         }
 
+        public static void v(String s, int i) {
+            v(s + String.valueOf(i));
+        }
+
         public static void w(String s, int i) {
             w(s + String.valueOf(i));
+        }
+
+        public static void i(String s, int i) {
+            i(s + String.valueOf(i));
+        }
+
+        public static void wtf(String s, Boolean b) {
+            wtf(s + String.valueOf(b));
         }
 
         public static void d(String s, Boolean b) {
             d(s + String.valueOf(b));
         }
 
-        public static void v(String s, Boolean b) {
-            v(s + String.valueOf(b));
-        }
-
         public static void e(String s, Boolean b) {
             e(s + String.valueOf(b));
+        }
+
+        public static void v(String s, Boolean b) {
+            v(s + String.valueOf(b));
         }
 
         public static void w(String s, Boolean b) {
             w(s + String.valueOf(b));
         }
 
+        public static void i(String s, Boolean b) {
+            i(s + String.valueOf(b));
+        }
     }
 
     public static class Toaster {

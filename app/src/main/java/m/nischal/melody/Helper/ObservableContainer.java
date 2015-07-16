@@ -28,7 +28,6 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import m.nischal.melody.ObjectModels.Album;
 import m.nischal.melody.ObjectModels.Artist;
