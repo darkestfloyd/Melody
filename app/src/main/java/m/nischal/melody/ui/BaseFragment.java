@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +39,7 @@ import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.RecyclerItemClickListener;
+import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import rx.subscriptions.CompositeSubscription;
@@ -50,6 +50,7 @@ public class BaseFragment extends Fragment {
     private ArrayList<_BaseModel> baseModelArrayList = new ArrayList<>();
     private RecyclerView rv;
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private RxBus rxBus;
 
     @Nullable
     @Override
@@ -63,6 +64,8 @@ public class BaseFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        rxBus = RxBus.getBus();
+        DebugHelper.LumberJack.d("bus id in fragment: ", rxBus.hashCode());
         Context context = getActivity().getApplicationContext();
         rv = (RecyclerView) view.findViewById(R.id.recycler_view);
         rv.setLayoutManager(new GridLayoutManager(context, 2));
@@ -71,6 +74,10 @@ public class BaseFragment extends Fragment {
             @Override
             public void onClick(View v, int position) {
                 DebugHelper.LumberJack.d("recycler view item click on position: ", position + 1);
+                if (rxBus.hasObservers()) {
+                    DebugHelper.LumberJack.d("bus has observers.. publishing now!");
+                    rxBus.publish(new RxBus.BusClass.TapEvent());
+                }
             }
 
             @Override
