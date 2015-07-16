@@ -65,6 +65,7 @@ public class BaseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         rxBus = RxBus.getBus();
+        DebugHelper.LumberJack.d("bus id in fragment: ", rxBus.hashCode());
         Context context = getActivity().getApplicationContext();
         rv = (RecyclerView) view.findViewById(R.id.recycler_view);
         rv.setLayoutManager(new GridLayoutManager(context, 2));
@@ -73,8 +74,10 @@ public class BaseFragment extends Fragment {
             @Override
             public void onClick(View v, int position) {
                 DebugHelper.LumberJack.d("recycler view item click on position: ", position + 1);
-                if (rxBus.hasObservers())
+                if (rxBus.hasObservers()) {
+                    DebugHelper.LumberJack.d("bus has observers.. publishing now!");
                     rxBus.publish(new RxBus.BusClass.TapEvent());
+                }
             }
 
             @Override

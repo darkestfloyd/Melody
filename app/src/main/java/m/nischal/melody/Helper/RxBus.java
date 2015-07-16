@@ -39,7 +39,7 @@ public class RxBus {
 
     public static RxBus getBus() {
         if (rxBus == null)
-            return new RxBus();
+            rxBus = new RxBus();
         return rxBus;
     }
 

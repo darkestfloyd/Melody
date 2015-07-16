@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 
+import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.R;
 import rx.Subscription;
@@ -61,9 +62,11 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     private void initBus() {
         rxBus = RxBus.getBus();
+        DebugHelper.LumberJack.d("bus id in activity: ", rxBus.hashCode());
         Subscription sc = rxBus
                 .toObserverable()
                 .subscribe(busClass -> {
+                    DebugHelper.LumberJack.d("event received! doing action..");
                     if (busClass instanceof RxBus.BusClass.TapEvent)
                         drawerLayout.openDrawer(Gravity.LEFT);
                 });
