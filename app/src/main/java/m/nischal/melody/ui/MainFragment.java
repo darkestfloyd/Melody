@@ -1,6 +1,11 @@
 package m.nischal.melody.ui;
 
-import android.os.Build;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -10,13 +15,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 
 import java.util.ArrayList;
 
@@ -37,7 +42,7 @@ public class MainFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.tab_fragment, container, false);
+        return inflater.inflate(R.layout.tab_fragment_new, container, false);
     }
 
     @Override
@@ -48,20 +53,22 @@ public class MainFragment extends Fragment {
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle("M3l0dY.");
+        toolbar.setNavigationOnClickListener(view1 -> DebugHelper.LumberJack.i("clicked!"));
+        ((MainActivity) getActivity()).setToolbar(toolbar);
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
+
         viewPager.setAdapter(new PagerAdapter(getChildFragmentManager()));
 
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
+        ((MainActivity) getActivity()).setUpTabLayout(tabLayout);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
-
-        ((MainActivity) getActivity()).setToolbar(toolbar);
     }
 
     @Override
@@ -73,11 +80,11 @@ public class MainFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         RxBus bus = RxBus.getBus();
         DebugHelper.LumberJack.d("click at menu");
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                DebugHelper.LumberJack.d("click at icon");
-                bus.publish(new RxBus.BusClass.TapEvent());
-                return true;
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            DebugHelper.LumberJack.d("click at icon");
+            bus.publish(new RxBus.BusClass.TapEvent());
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
