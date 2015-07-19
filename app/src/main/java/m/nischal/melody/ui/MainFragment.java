@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import java.util.ArrayList;
 
 import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
@@ -31,17 +32,7 @@ import m.nischal.melody.R;
 public class MainFragment extends Fragment {
 
     private ArrayList<String> titles = new ArrayList<String>();
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window w = getActivity().getWindow();
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            w.setStatusBarColor(getResources().getColor(R.color.primary_dark));
-        }
-    }
+    private Toolbar toolbar;
 
     @Nullable
     @Override
@@ -53,9 +44,9 @@ public class MainFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        titles = TitleHelper.getTitles();
+        titles = GeneralHelpers.TitleHelper.getTitles();
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -67,9 +58,10 @@ public class MainFragment extends Fragment {
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            //actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
+
+        ((MainActivity) getActivity()).setToolbar(toolbar);
     }
 
     @Override
@@ -88,20 +80,6 @@ public class MainFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public static class TitleHelper {
-
-        public static ArrayList<String> getTitles() {
-            ArrayList<String> titles = new ArrayList<String>();
-            titles.add(" SONGS ");
-            titles.add(" ALBUMS ");
-            titles.add(" ARTISTS ");
-            titles.add(" PLAYLISTS ");
-            titles.add(" GENRES ");
-            return titles;
-        }
-
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

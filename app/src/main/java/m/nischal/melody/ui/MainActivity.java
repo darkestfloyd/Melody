@@ -1,18 +1,22 @@
 package m.nischal.melody.ui;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.Helper.RxBus;
+import m.nischal.melody.Helper.ScrimInsetsFrameLayout;
 import m.nischal.melody.R;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -20,11 +24,13 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by Cyplops on 08-Jul-15.
  */
-public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
+public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener, ScrimInsetsFrameLayout.OnInsetsCallback {
 
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
     private RxBus rxBus;
+    private Toolbar toolbar;
+
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Override
@@ -51,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         ObservableContainer.initAll(this);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, null, R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
+
+        ScrimInsetsFrameLayout scrimInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.scrim_header);
+        scrimInsetsFrameLayout.setOnInsetsCallback(this);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, new MainFragment());
@@ -62,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         super.onDestroy();
         if (subscriptions.hasSubscriptions())
             subscriptions.unsubscribe();
+    }
+
+    protected void setToolbar(Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 
     private void replaceFragment() {
@@ -106,6 +120,18 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     @Override
     public void onDrawerStateChanged(int newState) {
         actionBarDrawerToggle.onDrawerStateChanged(newState);
+    }
+
+    @Override
+    public void onInsetsChanged(Rect insets) {
+        Toolbar toolbar = this.toolbar;
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                toolbar.getLayoutParams();
+        lp.topMargin = insets.top;
+        int top = insets.top;
+        insets.top += toolbar.getHeight();
+        toolbar.setLayoutParams(lp);
+        insets.top = top;
     }
 
 }
