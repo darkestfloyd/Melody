@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:clipToPadding="false"
+        android:elevation="4dp" />
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:clipToPadding="false"
+        android:elevation="4dp"
+        android:paddingEnd="0dp"
+        android:paddingStart="48dp"
+        android:layout_marginTop="56dp"
+        android:scrollbars="horizontal"
+        app:tabGravity="center"
+        app:tabIndicatorColor="@color/primary"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/accent"
+        app:tabTextColor="@color/primary_text" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false" />
+
+</FrameLayout>

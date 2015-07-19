@@ -69,6 +69,7 @@ public class BaseFragment extends Fragment {
         rv.setLayoutManager(new GridLayoutManager(context, 2));
         populateList();
         rv.addOnItemTouchListener(new RecyclerItemClickListener(context));
+        rv.addOnScrollListener(((MainActivity) getActivity()).getScrollListenerInstnce());
     }
 
     @Override
@@ -121,5 +122,4 @@ public class BaseFragment extends Fragment {
                 break;
         }
     }
-
 }

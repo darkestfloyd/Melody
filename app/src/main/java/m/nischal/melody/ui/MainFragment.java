@@ -1,6 +1,5 @@
 package m.nischal.melody.ui;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -8,15 +7,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 
 import java.util.ArrayList;
 
@@ -26,18 +21,40 @@ import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 
-/**
- * Created by Cyplops on 08-Jul-15.
+/*The MIT License (MIT)
+ *
+ *    Copyright (c) 2015 Nischal M
+ *
+ *    Permission is hereby granted, free of charge, to any person obtaining a copy
+ *    of this software and associated documentation files (the "Software"), to deal
+ *    in the Software without restriction, including without limitation the rights
+ *    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *    copies of the Software, and to permit persons to whom the Software is
+ *    furnished to do so, subject to the following conditions:
+ *
+ *    The above copyright notice and this permission notice shall be included in
+ *    all copies or substantial portions of the Software.
+ *
+ *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *    THE SOFTWARE.
  */
+
 public class MainFragment extends Fragment {
 
     private ArrayList<String> titles = new ArrayList<String>();
-    private Toolbar toolbar;
+    private ViewPager viewPager;
+    private MainActivity.ViewPagerState stateListener;
+    private TabLayout tabLayout;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.tab_fragment, container, false);
+        return inflater.inflate(R.layout.tab_fragment_new, container, false);
     }
 
     @Override
@@ -46,40 +63,23 @@ public class MainFragment extends Fragment {
 
         titles = GeneralHelpers.TitleHelper.getTitles();
 
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        MainActivity parent = (MainActivity) getActivity();
+        parent.setToolbar((Toolbar) view.findViewById(R.id.toolbar));
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
+        viewPager = (ViewPager) view.findViewById(R.id.viewPager);
+        stateListener = parent.getViewPagerStateListenerInstance();
         viewPager.setAdapter(new PagerAdapter(getChildFragmentManager()));
+        viewPager.addOnPageChangeListener(stateListener);
 
-        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
-
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-        }
-
-        ((MainActivity) getActivity()).setToolbar(toolbar);
+        parent.setUpTabLayout(tabLayout);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        RxBus bus = RxBus.getBus();
-        DebugHelper.LumberJack.d("click at menu");
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                DebugHelper.LumberJack.d("click at icon");
-                bus.publish(new RxBus.BusClass.TapEvent());
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public void onDestroy() {
+        super.onDestroy();
+        viewPager.removeOnPageChangeListener(stateListener);
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {
@@ -101,6 +101,7 @@ public class MainFragment extends Fragment {
             base.setArguments(bundle);
             return base;
         }
+
 
         @Override
         public int getCount() {
