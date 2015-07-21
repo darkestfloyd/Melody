@@ -39,7 +39,6 @@ import m.nischal.melody.Adapters.RecyclerViewAdapter;
 import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.RecyclerItemClickListener;
-import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import rx.subscriptions.CompositeSubscription;
@@ -50,7 +49,6 @@ public class BaseFragment extends Fragment {
     private ArrayList<_BaseModel> baseModelArrayList = new ArrayList<>();
     private RecyclerView rv;
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private RxBus rxBus;
 
     @Nullable
     @Override

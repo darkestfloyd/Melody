@@ -5,4 +5,8 @@
 
     <string name="image_context_main">image</string>
     <string name="image_context_menu">menu</string>
+    <string name="title_activity_details_activity">Details</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>

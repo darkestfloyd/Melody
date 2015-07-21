@@ -9,15 +9,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.GeneralHelpers;
-import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 
@@ -49,12 +46,11 @@ public class MainFragment extends Fragment {
     private ArrayList<String> titles = new ArrayList<String>();
     private ViewPager viewPager;
     private MainActivity.ViewPagerState stateListener;
-    private TabLayout tabLayout;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.tab_fragment_new, container, false);
+        return inflater.inflate(R.layout.tab_fragment, container, false);
     }
 
     @Override
@@ -71,7 +67,7 @@ public class MainFragment extends Fragment {
         viewPager.setAdapter(new PagerAdapter(getChildFragmentManager()));
         viewPager.addOnPageChangeListener(stateListener);
 
-        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
         parent.setUpTabLayout(tabLayout);
     }
@@ -101,7 +97,6 @@ public class MainFragment extends Fragment {
             base.setArguments(bundle);
             return base;
         }
-
 
         @Override
         public int getCount() {

@@ -24,8 +24,13 @@ package m.nischal.melody.Helper;
  */
 
 import android.content.Context;
+import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+
+import m.nischal.melody.R;
 
 public class PicassoHelper {
 
@@ -34,6 +39,14 @@ public class PicassoHelper {
     public static void initPicasso(Context context) {
         picassoWrapper = Picasso.with(context);
         picassoWrapper.setLoggingEnabled(false);
+    }
+
+    public static void putInImageView(String path, ImageView imageView) {
+        if (path != null)
+            picassoWrapper
+                    .load(new File(path))
+                    .into(imageView);
+        else picassoWrapper.load(R.drawable.ic_album_black_48dp).into(imageView);
     }
 
 }

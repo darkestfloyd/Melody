@@ -30,12 +30,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.PicassoHelper;
-import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 
@@ -58,11 +56,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         _BaseModel b = baseModelArrayList.get(position);
         holder.titleText.setText(b.getTitle());
         holder.subTitleText.setText(b.getSubTitle());
-        String imagePath = b.getImagePath();
-        if (imagePath != null)
-            PicassoHelper.picassoWrapper.load(new File(imagePath)).into(holder.imageView);
-        if(b instanceof Song)
-            DebugHelper.LumberJack.d("in adapter " + imagePath);
+        PicassoHelper.putInImageView(b.getImagePath(), holder.imageView);
         holder.menuImage.setOnClickListener(view -> DebugHelper.overdose(holder.menuImage.getContext(), "click on menu"));
     }
 

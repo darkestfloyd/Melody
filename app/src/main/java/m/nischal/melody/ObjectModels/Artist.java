@@ -129,7 +129,7 @@ public final class Artist extends _BaseModel {
      */
     @Override
     public String getSubTitle() {
-        return "";
+        return artist_num_tracks;
     }
 
     /**
@@ -139,4 +139,5 @@ public final class Artist extends _BaseModel {
     public String getImagePath() {
         return null;
     }
+
 }

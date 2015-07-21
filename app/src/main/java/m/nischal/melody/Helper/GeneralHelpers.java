@@ -25,6 +25,9 @@ package m.nischal.melody.Helper;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.ObjectModels.Song;
+import m.nischal.melody.ObjectModels._BaseModel;
+
 public class GeneralHelpers {
 
     public static class TitleHelper {
@@ -38,7 +41,6 @@ public class GeneralHelpers {
             titles.add(" GENRES ");
             return titles;
         }
-
     }
 
 }

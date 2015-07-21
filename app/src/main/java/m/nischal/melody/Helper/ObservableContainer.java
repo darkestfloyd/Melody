@@ -34,6 +34,7 @@ import m.nischal.melody.ObjectModels.Artist;
 import m.nischal.melody.ObjectModels.Genre;
 import m.nischal.melody.ObjectModels.Playlist;
 import m.nischal.melody.ObjectModels.Song;
+import m.nischal.melody.ObjectModels._BaseModel;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

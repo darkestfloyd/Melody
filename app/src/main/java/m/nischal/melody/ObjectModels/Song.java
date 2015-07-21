@@ -24,13 +24,14 @@ package m.nischal.melody.ObjectModels;
  */
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
 import m.nischal.melody.Helper.DebugHelper;
-import m.nischal.melody.Helper.ObservableContainer;
 
 /**
  * <code>Song</code>
@@ -52,8 +53,9 @@ public final class Song extends _BaseModel {
     public static final int SONG_ARTIST_ID_COLUMN = 9;
     public static final int SONG_BOOKMARK_COLUMN = 10;
     public static final int SONG_DURATION_COLUMN = 11;
-    public static final int SONG_TRACK_NUMBER_COLUMN = 11;
-    public static final int SONG_YEAR_COLUMN = 12;
+    public static final int SONG_TRACK_NUMBER_COLUMN = 12;
+    public static final int SONG_YEAR_COLUMN = 13;
+    public static final int SONG_DATA_COLUMN = 14;
     public static final Uri song_uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
     public static final String[] projections = {
             MediaStore.Audio.Media._ID,
@@ -69,11 +71,15 @@ public final class Song extends _BaseModel {
             MediaStore.Audio.Media.BOOKMARK,
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.TRACK,
-            MediaStore.Audio.Media.YEAR
+            MediaStore.Audio.Media.YEAR,
+            MediaStore.Audio.Media.DATA
     };
     public static final String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+    private static StringBuilder path = new StringBuilder();
+    private static MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
     final private String song_id, song_title, song_display_name, song_date_added, song_date_modified, song_size,
-            song_album, song_album_id, song_artist, song_artist_id, song_bookmark, song_duration, song_track, song_year;
+            song_album, song_album_id, song_artist, song_artist_id, song_bookmark,
+            song_duration, song_track, song_year, song_data;
 
     /**
      * Constructor for Song object.
@@ -92,10 +98,12 @@ public final class Song extends _BaseModel {
      * @param song_duration      The duration of the audio file, in ms.
      * @param song_track         The track number of this song on the album, if any.
      * @param song_year          The year the audio file was recorded, if any
+     * @param data               Full path of song
      */
     private Song(String song_id, String song_title, String song_display_name, String song_date_added, String song_date_modified,
                  String song_size, String song_album, String song_album_id, String song_artist, String song_artist_id,
-                 String song_bookmark, String song_duration, String song_track, String song_year) {
+                 String song_bookmark, String song_duration, String song_track, String song_year,
+                 String data) {
         this.song_id = song_id;
         this.song_title = song_title;
         this.song_display_name = song_display_name;
@@ -110,6 +118,7 @@ public final class Song extends _BaseModel {
         this.song_duration = song_duration;
         this.song_track = song_track;
         this.song_year = song_year;
+        this.song_data = data;
     }
 
     /**
@@ -138,8 +147,9 @@ public final class Song extends _BaseModel {
                 String duration = c.getString(SONG_DURATION_COLUMN);
                 String track = c.getString(SONG_TRACK_NUMBER_COLUMN);
                 String year = c.getString(SONG_YEAR_COLUMN);
+                String data = c.getString(SONG_DATA_COLUMN);
                 songs.add(new Song(_id, title, display_name, date_added, date_modified, size, album, album_id,
-                        artist, artist_id, bookmark, duration, track, year));
+                        artist, artist_id, bookmark, duration, track, year, data));
             } while (c.moveToNext());
         }
         DebugHelper.LumberJack.v("cursor size for songs: " + c.getCount());
@@ -232,12 +242,6 @@ public final class Song extends _BaseModel {
      */
     @Override
     public String getImagePath() {
-        final StringBuilder path = new StringBuilder();
-        ObservableContainer
-                .getAlbumArrayListObservable()
-                .filter(album -> album.getAlbum_name().equals(song_album))
-                .map(Album::getAlbum_art)
-                .subscribe(path::append);
-        return path.toString();
+        return null;
     }
 }

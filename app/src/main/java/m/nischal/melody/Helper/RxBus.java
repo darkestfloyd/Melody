@@ -23,9 +23,11 @@ package m.nischal.melody.Helper;
  *    THE SOFTWARE.
  */
 
+import android.support.annotation.CheckResult;
 import android.support.v4.util.ArrayMap;
 import android.view.View;
 
+import m.nischal.melody.ObjectModels._BaseModel;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
@@ -36,6 +38,8 @@ public class RxBus {
     public static final String TAG_RECYCLER_VIEW_ITEM_CLICK = "m.nischal.melody.recycler_view_item_click";
     public static final String TAG_RECYCLER_VIEW_ITEM_LONG_PRESS = "m.nischal.melody.recycler_view_item_long_press";
     public static final String TAG_RECYCLER_VIEW_MENU_CLICK = "m.nischal.melody.recycler_view_menu_click";
+
+    public static final String TAG_PAGER_POSITION = "m.nischal.melody.pagerPosition";
 
     private static RxBus rxBus;
     private final ArrayMap<String, Integer> values = new ArrayMap<>();
@@ -54,12 +58,13 @@ public class RxBus {
     public void putValue(String s, Integer i) {
         values.put(s, i);
     }
-
+    
+    @CheckResult
     public Integer getValue(String s) {
         return values.get(s);
     }
 
-    public Observable<BusClass> toObserverable() {
+    public Observable<BusClass> toObservable() {
         return bus;
     }
 
@@ -76,6 +81,10 @@ public class RxBus {
         }
 
         public static class RecyclerViewItemClick extends BusClass {
+        }
+
+        public static class ViewPagerPageChanged extends BusClass{
+
         }
 
     }

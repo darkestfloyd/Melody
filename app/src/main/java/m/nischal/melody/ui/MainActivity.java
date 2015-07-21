@@ -5,12 +5,12 @@ import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private RxBus rxBus;
     private Toolbar toolbar;
     private TabLayout tabLayout;
-    private PropertyValuesHolder holder1, holder2;
-    private ObjectAnimator toolBarAnimator, statusBarAnimator, tabLayoutAnimator;
 
     private boolean toolbarVisible;
 
@@ -89,20 +87,19 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         toolbarVisible = true;
         waitForState = false;
 
-        rxBus = RxBus.getBus();
-        PicassoHelper.initPicasso(this);
-        ObservableContainer.initAll(this);
+        initLibraries();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, null, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
 
-        ScrimInsetsFrameLayout scrimInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.scrim_header);
-        scrimInsetsFrameLayout.setOnInsetsCallback(this);
+        ((ScrimInsetsFrameLayout) findViewById(R.id.scrim_header))
+                .setOnInsetsCallback(this);
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container, new MainFragment());
-        fragmentTransaction.commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, new MainFragment())
+                .commit();
     }
 
     @Override
@@ -125,20 +122,43 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     protected void setToolbar(Toolbar toolbar) {
         this.toolbar = toolbar;
+        toolbar.setTitle("Melody.");
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         setSupportActionBar(toolbar);
     }
 
     protected void setUpTabLayout(TabLayout tab) {
         this.tabLayout = tab;
+        rxBus.putValue(RxBus.TAG_PAGER_POSITION, 0);
+        rxBus.publish(new RxBus.BusClass.ViewPagerPageChanged());
     }
 
     private void replaceFragment() {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container, new DetailsFragment()).addToBackStack(null);
-        fragmentTransaction.commit();
-        int x = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK);
-        DebugHelper.LumberJack.i("child view click position: ", x);
-        ObservableContainer.getAlbumArrayListObservable().take(x + 1).last().subscribe(album -> DebugHelper.LumberJack.i(album.getAlbum_name()));
+
+        Intent intent = new Intent(this, Details.class);
+        startActivity(intent);
+
+        /*getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, new demo())
+                .addToBackStack(null)
+                .commit();*/
+
+        //int x = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK);
+        //ObservableContainer.getAlbumArrayListObservable().take(x + 1).last().subscribe(album -> DebugHelper.LumberJack.i(album.getAlbum_name()));
+    }
+
+    private void initLibraries() {
+        rxBus = RxBus.getBus();
+        subscriptions.add(rxBus.toObservable()
+                .subscribe(busClass -> {
+                    if (busClass instanceof RxBus.BusClass.RecyclerViewItemClick)
+                        if (rxBus.getValue(RxBus.TAG_PAGER_POSITION) != 0)
+                            replaceFragment();
+                    else DebugHelper.overdose(this, "song click");
+                }));
+        PicassoHelper.initPicasso(this);
+        ObservableContainer.initAll(this);
     }
 
     @Override
@@ -182,17 +202,17 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         toolbarVisible = v;
 
         toolbar.clearAnimation();
-        holder1 = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, endy);
-        holder2 = PropertyValuesHolder.ofFloat(View.ALPHA, endalpha);
-        toolBarAnimator = ObjectAnimator.ofPropertyValuesHolder(toolbar, holder1, holder2);
+        PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, endy);
+        PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat(View.ALPHA, endalpha);
+        ObjectAnimator toolBarAnimator = ObjectAnimator.ofPropertyValuesHolder(toolbar, holder1, holder2);
 
         drawerLayout.clearAnimation();
-        statusBarAnimator = ObjectAnimator
+        ObjectAnimator statusBarAnimator = ObjectAnimator
                 .ofInt(drawerLayout, "statusBarBackgroundColor", sc, ec);
         statusBarAnimator.setEvaluator(new ArgbEvaluator());
 
         tabLayout.clearAnimation();
-        tabLayoutAnimator = ObjectAnimator.ofFloat(tabLayout, View.TRANSLATION_Y, et);
+        ObjectAnimator tabLayoutAnimator = ObjectAnimator.ofFloat(tabLayout, View.TRANSLATION_Y, et);
 
         AnimatorSet animations = new AnimatorSet();
         animations
@@ -215,13 +235,14 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
             super.onPageSelected(position);
             if (!toolbarVisible)
                 animate(0, 1f, Color.BLACK, getResources().getColor(R.color.primary_dark), 0, true);
+            rxBus.putValue(RxBus.TAG_PAGER_POSITION, position);
+            rxBus.publish(new RxBus.BusClass.ViewPagerPageChanged());
         }
     }
 
     private class RecyclerViewQuickRecall extends RecyclerView.OnScrollListener {
 
         private int scrollValue;
-        private boolean waitForState;
         private int primary, black;
 
         public RecyclerViewQuickRecall() {
@@ -242,9 +263,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
             scrollValue += dy;
 
-            if (dy > 0 && scrollValue > 300 && toolbarVisible) {
+            if (dy > 10 && scrollValue > 500 && toolbarVisible) {
                 animate(-toolbar.getBottom(), 1f, primary, black, -tabLayout.getTop(), false); //hide
-            } else if (dy < 0 && !toolbarVisible) {
+            } else if (dy < -10 && !toolbarVisible) {
                 animate(0, 1f, black, primary, 0, true); //show
             }
         }
