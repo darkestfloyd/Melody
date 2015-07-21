@@ -24,7 +24,6 @@ package m.nischal.melody.ObjectModels;
  */
 
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -155,6 +154,10 @@ public final class Song extends _BaseModel {
         DebugHelper.LumberJack.v("cursor size for songs: " + c.getCount());
         c.close();
         return songs;
+    }
+
+    public String getSong_data() {
+        return song_data;
     }
 
     public String getSong_id() {

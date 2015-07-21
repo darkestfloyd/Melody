@@ -7,6 +7,5 @@ interface IMelodyPlayer {
 
    void setDataSource(String path);
    void play();
-   void pause();
 
 }

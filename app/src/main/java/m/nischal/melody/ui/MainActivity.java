@@ -5,10 +5,15 @@ import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -28,6 +33,8 @@ import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.Helper.ScrimInsetsFrameLayout;
+import m.nischal.melody.IMelodyPlayer;
+import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.R;
 import rx.subscriptions.CompositeSubscription;
 
@@ -66,6 +73,21 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private boolean waitForState;
+    private boolean bound = false;
+    private IMelodyPlayer connectedService;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            connectedService = IMelodyPlayer.Stub.asInterface(iBinder);
+            bound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            connectedService = null;
+            bound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +122,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .beginTransaction()
                 .replace(R.id.container, new MainFragment())
                 .commit();
+
+        Intent intent = new Intent(this, MediaPlayerService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -107,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         super.onDestroy();
         if (subscriptions.hasSubscriptions())
             subscriptions.unsubscribe();
+        if (bound)
+            unbindService(mConnection);
     }
 
     @Override
@@ -155,10 +182,25 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     if (busClass instanceof RxBus.BusClass.RecyclerViewItemClick)
                         if (rxBus.getValue(RxBus.TAG_PAGER_POSITION) != 0)
                             replaceFragment();
-                    else DebugHelper.overdose(this, "song click");
+                        else playMusic();
                 }));
         PicassoHelper.initPicasso(this);
         ObservableContainer.initAll(this);
+    }
+
+    private void playMusic() {
+        int position = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK);
+        ObservableContainer.getSongArrayListObservable()
+                .take(position + 1)
+                .last()
+                .subscribe(song -> {
+                    try {
+                        connectedService.setDataSource(song.getSong_data());
+                        connectedService.play();
+                    } catch (RemoteException e) {
+                        DebugHelper.LumberJack.e(e);
+                    }
+                });
     }
 
     @Override
