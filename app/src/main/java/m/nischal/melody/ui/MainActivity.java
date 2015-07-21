@@ -1,13 +1,8 @@
 package m.nischal.melody.ui;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -23,15 +18,17 @@ import android.view.ViewGroup;
 import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.RxBus;
-import m.nischal.melody.IMelodyPlayer;
-import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
 import m.nischal.melody.ui.widgets.ScrimInsetsFrameLayout;
 import rx.subscriptions.CompositeSubscription;
 
-import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
+import static m.nischal.melody.MediaPlayerPresenter.Token;
+import static m.nischal.melody.MediaPlayerPresenter.bindToService;
+import static m.nischal.melody.MediaPlayerPresenter.play_pause;
+import static m.nischal.melody.MediaPlayerPresenter.setup;
+import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
 /*The MIT License (MIT)
  *
@@ -65,21 +62,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private TabLayout tabLayout;
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private boolean bound = false;
-    private IMelodyPlayer connectedService;
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            connectedService = IMelodyPlayer.Stub.asInterface(iBinder);
-            bound = true;
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            connectedService = null;
-            bound = false;
-        }
-    };
+    private Token token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +96,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .replace(R.id.container, new MainFragment())
                 .commit();
 
-        Intent intent = new Intent(this, MediaPlayerService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        token = bindToService(this);
     }
 
     @Override
@@ -121,8 +104,16 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         super.onDestroy();
         if (subscriptions.hasSubscriptions())
             subscriptions.unsubscribe();
-        if (bound)
-            unbindService(mConnection);
+        unbindFromService(token);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -149,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         rxBus.publish(new BusEvents.ViewPagerPageChanged());
     }
 
-    private void replaceFragment() {
+    private void showDetails() {
         Intent intent = new Intent(this, Details.class);
         startActivity(intent);
     }
@@ -160,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .subscribe(busClass -> {
                     if (busClass instanceof BusEvents.RecyclerViewItemClick)
                         if (rxBus.getValue(RxBus.TAG_PAGER_POSITION, 0) != 0)
-                            replaceFragment();
+                            showDetails();
                         else playMusic();
                 }));
         PicassoHelper.initPicasso(this);
@@ -173,12 +164,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .take(position + 1)
                 .last()
                 .subscribe(song -> {
-                    try {
-                        connectedService.setDataSource(song.getSong_data());
-                        connectedService.play();
-                    } catch (RemoteException e) {
-                        DebugHelper.LumberJack.e(e);
-                    }
+                    setup(song.getSong_data());
+                    play_pause();
                 });
     }
 
