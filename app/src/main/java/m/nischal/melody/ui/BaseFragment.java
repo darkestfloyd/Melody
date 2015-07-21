@@ -35,12 +35,11 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Adapters.RecyclerViewAdapter;
-import m.nischal.melody.Helper.DebugHelper;
 import m.nischal.melody.Helper.ObservableContainer;
-import m.nischal.melody.Helper.RecyclerItemClickListener;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
+import m.nischal.melody.RecyclerViewHelpers.RecyclerItemClickListener;
+import m.nischal.melody.RecyclerViewHelpers.RecyclerViewAdapter;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
@@ -54,7 +53,6 @@ public class BaseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentType = getArguments().getInt(_BaseModel.VIEW_PAGER_POSITION_STRING);
-        DebugHelper.LumberJack.v("BaseFragment creation with value " + fragmentType);
         return inflater.inflate(R.layout.recycler_view, container, false);
     }
 
@@ -67,7 +65,7 @@ public class BaseFragment extends Fragment {
         rv.setLayoutManager(new GridLayoutManager(context, 2));
         populateList();
         rv.addOnItemTouchListener(new RecyclerItemClickListener(context));
-        rv.addOnScrollListener(((MainActivity) getActivity()).getScrollListenerInstnce());
+        rv.addOnScrollListener(((MainActivity) getActivity()).getRecyclerScrollListenerInstance());
     }
 
     @Override
@@ -82,7 +80,6 @@ public class BaseFragment extends Fragment {
     }
 
     private void populateList() {
-        DebugHelper.LumberJack.v("populating list for fragment type: ", fragmentType);
         switch (fragmentType) {
             case _BaseModel.ALBUMS:
                 subscriptions.add(ObservableContainer

@@ -29,7 +29,7 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.DebugHelper;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper;
 
 /**
  * <code>Album</code>

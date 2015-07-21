@@ -30,7 +30,10 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.GeneralHelpers;
+
+import static m.nischal.melody.Helper.GeneralHelpers.*;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.*;
 
 /**
  * <code>Song</code>
@@ -128,7 +131,7 @@ public final class Song extends _BaseModel {
      */
     public static ArrayList<Song> createSongsFromCursor(Cursor c) {
         ArrayList<Song> songs = new ArrayList<>();
-        DebugHelper.LumberJack.v("creation of songs in progress.. ");
+        LumberJack.v("creation of songs in progress.. ");
         if (c.getCount() != 0) {
             c.moveToFirst();
             do {

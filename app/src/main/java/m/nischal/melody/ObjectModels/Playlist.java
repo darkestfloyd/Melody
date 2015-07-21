@@ -29,7 +29,9 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.GeneralHelpers;
+
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.*;
 
 /**
  * <code>Playlist</code>
@@ -70,7 +72,7 @@ public final class Playlist extends _BaseModel {
      */
     public static ArrayList<Playlist> createPlaylistsFromCursor(Cursor c) {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        DebugHelper.LumberJack.v("creation of playlists in progress.. ");
+        LumberJack.v("creation of playlists in progress.. ");
         if (c.getCount() != 0) {
             c.moveToFirst();
             do {
@@ -82,7 +84,7 @@ public final class Playlist extends _BaseModel {
                 playlists.add(new Playlist(id, name, data, date_added, date_modeified));
             } while (c.moveToNext());
         }
-        DebugHelper.LumberJack.v("cursor size for playlists: " + c.getCount());
+        LumberJack.v("cursor size for playlists: " + c.getCount());
         c.close();
         return playlists;
     }

@@ -29,7 +29,9 @@ import android.provider.MediaStore;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.GeneralHelpers;
+
+import static m.nischal.melody.Helper.GeneralHelpers.*;
 
 /**
  * <code>Genres</code>

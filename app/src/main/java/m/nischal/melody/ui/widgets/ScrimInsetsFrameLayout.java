@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package m.nischal.melody.Helper;
+package m.nischal.melody.ui.widgets;
 
 import android.content.Context;
 import android.content.res.TypedArray;

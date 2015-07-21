@@ -39,6 +39,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static m.nischal.melody.Helper.GeneralHelpers.*;
+
 /**
  * Helper class for all model related observables.
  */

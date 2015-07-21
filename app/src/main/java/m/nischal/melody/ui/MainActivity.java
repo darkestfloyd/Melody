@@ -1,15 +1,9 @@
 package m.nischal.melody.ui;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -21,22 +15,23 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 
-import m.nischal.melody.Helper.DebugHelper;
+import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.ObservableContainer;
-import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.Helper.RxBus;
-import m.nischal.melody.Helper.ScrimInsetsFrameLayout;
 import m.nischal.melody.IMelodyPlayer;
 import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.R;
+import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
+import m.nischal.melody.ui.widgets.ScrimInsetsFrameLayout;
 import rx.subscriptions.CompositeSubscription;
+
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper;
+import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 
 /*The MIT License (MIT)
  *
@@ -69,10 +64,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private Toolbar toolbar;
     private TabLayout tabLayout;
 
-    private boolean toolbarVisible;
-
     private CompositeSubscription subscriptions = new CompositeSubscription();
-    private boolean waitForState;
     private boolean bound = false;
     private IMelodyPlayer connectedService;
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -105,9 +97,6 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer);
-
-        toolbarVisible = true;
-        waitForState = false;
 
         initLibraries();
 
@@ -157,30 +146,20 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     protected void setUpTabLayout(TabLayout tab) {
         this.tabLayout = tab;
         rxBus.putValue(RxBus.TAG_PAGER_POSITION, 0);
-        rxBus.publish(new RxBus.BusClass.ViewPagerPageChanged());
+        rxBus.publish(new BusEvents.ViewPagerPageChanged());
     }
 
     private void replaceFragment() {
-
         Intent intent = new Intent(this, Details.class);
         startActivity(intent);
-
-        /*getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, new demo())
-                .addToBackStack(null)
-                .commit();*/
-
-        //int x = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK);
-        //ObservableContainer.getAlbumArrayListObservable().take(x + 1).last().subscribe(album -> DebugHelper.LumberJack.i(album.getAlbum_name()));
     }
 
     private void initLibraries() {
         rxBus = RxBus.getBus();
         subscriptions.add(rxBus.toObservable()
                 .subscribe(busClass -> {
-                    if (busClass instanceof RxBus.BusClass.RecyclerViewItemClick)
-                        if (rxBus.getValue(RxBus.TAG_PAGER_POSITION) != 0)
+                    if (busClass instanceof BusEvents.RecyclerViewItemClick)
+                        if (rxBus.getValue(RxBus.TAG_PAGER_POSITION, 0) != 0)
                             replaceFragment();
                         else playMusic();
                 }));
@@ -189,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     }
 
     private void playMusic() {
-        int position = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK);
+        int position = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK, 0);
         ObservableContainer.getSongArrayListObservable()
                 .take(position + 1)
                 .last()
@@ -235,36 +214,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         insets.top = top;
     }
 
-    public RecyclerViewQuickRecall getScrollListenerInstnce() {
-        return new RecyclerViewQuickRecall();
-    }
-
-    public void animate(int endy, float endalpha, int sc, int ec, int et, boolean v) {
-
-        toolbarVisible = v;
-
-        toolbar.clearAnimation();
-        PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, endy);
-        PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat(View.ALPHA, endalpha);
-        ObjectAnimator toolBarAnimator = ObjectAnimator.ofPropertyValuesHolder(toolbar, holder1, holder2);
-
-        drawerLayout.clearAnimation();
-        ObjectAnimator statusBarAnimator = ObjectAnimator
-                .ofInt(drawerLayout, "statusBarBackgroundColor", sc, ec);
-        statusBarAnimator.setEvaluator(new ArgbEvaluator());
-
-        tabLayout.clearAnimation();
-        ObjectAnimator tabLayoutAnimator = ObjectAnimator.ofFloat(tabLayout, View.TRANSLATION_Y, et);
-
-        AnimatorSet animations = new AnimatorSet();
-        animations
-                .play(toolBarAnimator)
-                .with(statusBarAnimator)
-                .with(tabLayoutAnimator);
-        animations.addListener(new AnimatorFeedBack());
-        animations.setDuration(300);
-        animations.setInterpolator(new DecelerateInterpolator());
-        animations.start();
+    public RecyclerViewQuickRecall getRecyclerScrollListenerInstance() {
+        return new RecyclerViewQuickRecall(getResources().getColor(R.color.primary),
+                toolbar, tabLayout, drawerLayout);
     }
 
     public ViewPagerState getViewPagerStateListenerInstance() {
@@ -275,67 +227,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         @Override
         public void onPageSelected(int position) {
             super.onPageSelected(position);
-            if (!toolbarVisible)
-                animate(0, 1f, Color.BLACK, getResources().getColor(R.color.primary_dark), 0, true);
             rxBus.putValue(RxBus.TAG_PAGER_POSITION, position);
-            rxBus.publish(new RxBus.BusClass.ViewPagerPageChanged());
+            rxBus.publish(new BusEvents.ViewPagerPageChanged());
         }
     }
-
-    private class RecyclerViewQuickRecall extends RecyclerView.OnScrollListener {
-
-        private int scrollValue;
-        private int primary, black;
-
-        public RecyclerViewQuickRecall() {
-            scrollValue = 0;
-            primary = getResources().getColor(R.color.primary_dark);
-            black = Color.BLACK;
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            //0 - idle
-            //1 - dragging
-            //3 - setting
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
-            scrollValue += dy;
-
-            if (dy > 10 && scrollValue > 500 && toolbarVisible) {
-                animate(-toolbar.getBottom(), 1f, primary, black, -tabLayout.getTop(), false); //hide
-            } else if (dy < -10 && !toolbarVisible) {
-                animate(0, 1f, black, primary, 0, true); //show
-            }
-        }
-    }
-
-    private class AnimatorFeedBack implements Animator.AnimatorListener {
-
-        @Override
-        public void onAnimationStart(Animator animator) {
-            if (waitForState)
-                animator.cancel();
-            waitForState = true;
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animator) {
-            waitForState = false;
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animator) {
-            //waitForState = false;
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animator) {
-        }
-    }
-
 
 }

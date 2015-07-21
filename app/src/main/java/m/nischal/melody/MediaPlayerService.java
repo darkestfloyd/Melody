@@ -9,6 +9,9 @@ import android.os.RemoteException;
 
 import java.io.IOException;
 
+import m.nischal.melody.Helper.GeneralHelpers;
+import m.nischal.melody.Helper.RxBus;
+
 public class MediaPlayerService extends Service {
 
     private final static MediaPlayer mPlayer = new MediaPlayer();

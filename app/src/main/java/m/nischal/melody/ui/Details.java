@@ -16,12 +16,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.Helper.ObservableContainer;
-import m.nischal.melody.Helper.PicassoHelper;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import rx.Observable;
+
+import static m.nischal.melody.Helper.GeneralHelpers.*;
 
 public class Details extends AppCompatActivity {
 
@@ -41,8 +43,8 @@ public class Details extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         rxBus = RxBus.getBus();
-        int clickPosition = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK);
-        int pagerPosition = rxBus.getValue(RxBus.TAG_PAGER_POSITION);
+        int clickPosition = rxBus.getValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK, 0);
+        int pagerPosition = rxBus.getValue(RxBus.TAG_PAGER_POSITION, 0);
 
         models = new ArrayList<>();
         Observable<? extends _BaseModel> objectModel = Observable.empty();

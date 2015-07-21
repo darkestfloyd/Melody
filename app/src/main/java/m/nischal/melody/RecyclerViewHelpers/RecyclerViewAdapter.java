@@ -1,4 +1,4 @@
-package m.nischal.melody.Adapters;
+package m.nischal.melody.RecyclerViewHelpers;
 
 /*The MIT License (MIT)
  *
@@ -32,10 +32,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.DebugHelper;
-import m.nischal.melody.Helper.PicassoHelper;
+import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
+
+import static m.nischal.melody.Helper.GeneralHelpers.*;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RVViewHolder> {
 

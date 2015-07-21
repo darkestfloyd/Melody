@@ -23,10 +23,18 @@ package m.nischal.melody.Helper;
  *    THE SOFTWARE.
  */
 
+import android.content.Context;
+import android.util.Log;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.util.ArrayList;
 
-import m.nischal.melody.ObjectModels.Song;
-import m.nischal.melody.ObjectModels._BaseModel;
+import m.nischal.melody.R;
+import rx.Observer;
 
 public class GeneralHelpers {
 
@@ -41,6 +49,146 @@ public class GeneralHelpers {
             titles.add(" GENRES ");
             return titles;
         }
+    }
+
+    public static class DebugHelper {
+
+        private static final Boolean LOG_ENABLE = true;
+
+        public static <T> Observer<T> getDebugObserver() {
+            return new Observer<T>() {
+                @Override
+                public void onCompleted() {
+                    LumberJack.d("Debug observer/onComplete called");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    LumberJack.e("Debug observer/onError called");
+
+                }
+
+                @Override
+                public void onNext(T t) {
+                    LumberJack.d("Debug observer/onNext called with " + t.toString());
+                }
+            };
+        }
+
+        public static void overdose(Context c, String s) {
+            LumberJack.d(s);
+            Toaster.show(c, s);
+        }
+
+        public static class LumberJack {
+
+            public static final String TAG = "m.nischal.melody.TAG";
+
+            public static void e(Throwable t) {
+                if (LOG_ENABLE) Log.e(TAG, t.getMessage());
+            }
+
+            public static void wtf(String s) {
+                if (LOG_ENABLE) Log.d(TAG, s);
+            }
+
+            public static void d(String s) {
+                if (LOG_ENABLE) Log.d(TAG, s);
+            }
+
+            public static void e(String s) {
+                if (LOG_ENABLE) Log.e(TAG, s);
+            }
+
+            public static void v(String s) {
+                if (LOG_ENABLE) Log.v(TAG, s);
+            }
+
+            public static void w(String s) {
+                if (LOG_ENABLE) Log.w(TAG, s);
+            }
+
+            public static void i(String s) {
+                if (LOG_ENABLE) Log.i(TAG, s);
+            }
+
+            public static void wtf(String s, int i) {
+                wtf(s + String.valueOf(i));
+            }
+
+            public static void d(String s, int i) {
+                d(s + String.valueOf(i));
+            }
+
+            public static void e(String s, int i) {
+                e(s + String.valueOf(i));
+            }
+
+            public static void v(String s, int i) {
+                v(s + String.valueOf(i));
+            }
+
+            public static void w(String s, int i) {
+                w(s + String.valueOf(i));
+            }
+
+            public static void i(String s, int i) {
+                i(s + String.valueOf(i));
+            }
+
+            public static void wtf(String s, Boolean b) {
+                wtf(s + String.valueOf(b));
+            }
+
+            public static void d(String s, Boolean b) {
+                d(s + String.valueOf(b));
+            }
+
+            public static void e(String s, Boolean b) {
+                e(s + String.valueOf(b));
+            }
+
+            public static void v(String s, Boolean b) {
+                v(s + String.valueOf(b));
+            }
+
+            public static void w(String s, Boolean b) {
+                w(s + String.valueOf(b));
+            }
+
+            public static void i(String s, Boolean b) {
+                i(s + String.valueOf(b));
+            }
+        }
+
+        public static class Toaster {
+
+            public static final int DURATION = Toast.LENGTH_SHORT;
+
+            public static void show(Context c, String s) {
+                Toast.makeText(c, s, DURATION).show();
+            }
+
+        }
+    }
+
+    public static class PicassoHelper {
+
+        public static Picasso picassoWrapper;
+
+        public static void initPicasso(Context context) {
+            picassoWrapper = Picasso.with(context);
+            picassoWrapper.setLoggingEnabled(false);
+        }
+
+        public static void putInImageView(String path, ImageView imageView) {
+            if (path != null)
+                picassoWrapper
+                        .load(new File(path))
+                        .into(imageView);
+            else picassoWrapper.load(R.drawable.ic_album_black_48dp).into(imageView);
+        }
+
     }
 
 }

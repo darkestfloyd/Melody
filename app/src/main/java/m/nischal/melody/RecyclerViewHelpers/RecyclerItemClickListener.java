@@ -1,4 +1,4 @@
-package m.nischal.melody.Helper;
+package m.nischal.melody.RecyclerViewHelpers;
 
 /*The MIT License (MIT)
  *
@@ -29,6 +29,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import m.nischal.melody.Helper.BusEvents;
+import m.nischal.melody.Helper.RxBus;
+
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
 
     private GestureDetector gestureDetector;
@@ -40,15 +43,14 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
         gestureDetector = new GestureDetector(c, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
-                DebugHelper.LumberJack.i("click at: ", childPosition);
                 bus.putValue(RxBus.TAG_RECYCLER_VIEW_ITEM_CLICK, childPosition);
-                bus.publish(new RxBus.BusClass.RecyclerViewItemClick());
+                bus.publish(new BusEvents.RecyclerViewItemClick());
                 return true;
             }
 
             @Override
             public void onLongPress(MotionEvent e) {
-                bus.publish(new RxBus.BusClass.TapEvent());
+                bus.publish(new BusEvents.TapEvent());
             }
         });
     }
