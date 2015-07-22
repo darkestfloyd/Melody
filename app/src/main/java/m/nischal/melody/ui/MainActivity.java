@@ -3,7 +3,6 @@ package m.nischal.melody.ui;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -16,21 +15,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.File;
-
 import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.RxBus;
+import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
 import m.nischal.melody.ui.widgets.ScrimInsetsFrameLayout;
+import rx.Observer;
 import rx.subscriptions.CompositeSubscription;
 
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.*;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 import static m.nischal.melody.MediaPlayerPresenter.Token;
 import static m.nischal.melody.MediaPlayerPresenter.bindToService;
-import static m.nischal.melody.MediaPlayerPresenter.play_pause;
 import static m.nischal.melody.MediaPlayerPresenter.setup;
 import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
@@ -167,9 +166,23 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         ObservableContainer.getSongArrayListObservable()
                 .take(position + 1)
                 .last()
-                .subscribe(song -> {
-                    setup(song.getSong_data());
-                    play_pause();
+                .subscribe(new Observer<Song>() {
+                    @Override
+                    public void onCompleted() {
+                        LumberJack.d("onCompleted called/MainActivity#playMusic");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LumberJack.d("onError called/MainActivity#playMusic");
+                        LumberJack.e(e);
+                    }
+
+                    @Override
+                    public void onNext(Song song) {
+                        LumberJack.d("onNext called/MainActivity#playMusic");
+                        setup(song.getSong_data());
+                    }
                 });
     }
 

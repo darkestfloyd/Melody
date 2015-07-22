@@ -28,7 +28,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 
-import m.nischal.melody.Helper.GeneralHelpers;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 
 public class MediaPlayerPresenter {
 
@@ -41,7 +41,7 @@ public class MediaPlayerPresenter {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mService = IMelodyPlayer.Stub.asInterface(iBinder);
             bound = true;
-            GeneralHelpers.DebugHelper.LumberJack.i("Bound");
+            LumberJack.i("Bound");
         }
 
         @Override
@@ -50,7 +50,7 @@ public class MediaPlayerPresenter {
                 mService = null;
                 bound = false;
             }
-            GeneralHelpers.DebugHelper.LumberJack.i("UNBound");
+            LumberJack.i("UNBound");
         }
     };
 
@@ -62,6 +62,8 @@ public class MediaPlayerPresenter {
                 mConnection, Context.BIND_AUTO_CREATE);
         Token token = new Token(context);
         activitiesMap.put(token.getToken(), context);
+        LumberJack.i("connection established with token ", token.getToken());
+        LumberJack.d("connected with, ", activitiesMap.size());
         return token;
     }
 
@@ -71,10 +73,21 @@ public class MediaPlayerPresenter {
             return false;
         context.unbindService(mConnection);
         activitiesMap.remove(token.getToken());
+        LumberJack.i("connection terminated from token ", token.getToken());
+        if (activitiesMap.isEmpty()) kill();
         return true;
     }
 
+    private static void kill() {
+        try {
+            mService.killService();
+        } catch (RemoteException e) {
+            report(e);
+        }
+    }
+
     public static boolean setup(@NonNull String path) {
+        LumberJack.d("setting up");
         try {
             mService.setDataSource(path);
             return true;
@@ -85,6 +98,7 @@ public class MediaPlayerPresenter {
     }
 
     public static boolean play_pause() {
+        LumberJack.d("play/pause");
         try {
             mService.play();
             return true;
@@ -96,7 +110,7 @@ public class MediaPlayerPresenter {
 
     private static void report(Exception e) {
         e.printStackTrace();
-        GeneralHelpers.DebugHelper.LumberJack.e(e);
+        LumberJack.e(e);
     }
 
     public static class Token {

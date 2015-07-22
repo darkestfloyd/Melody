@@ -33,7 +33,6 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import m.nischal.melody.Helper.BusEvents;
-import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.Helper.RxBus;
 import rx.Subscription;
 
@@ -83,7 +82,7 @@ public class RecyclerViewQuickRecall extends RecyclerView.OnScrollListener {
         //1 - dragging
         //3 - setting
 
-        if(newState == RecyclerView.SCROLL_STATE_IDLE)
+        if (newState == RecyclerView.SCROLL_STATE_IDLE)
             picassoWrapper.resumeTag(TAG);
     }
 
@@ -91,8 +90,6 @@ public class RecyclerViewQuickRecall extends RecyclerView.OnScrollListener {
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
         scrollValue += dy;
-
-        GeneralHelpers.DebugHelper.LumberJack.d("dy: " , dy);
 
         if (Math.abs(dy) > 50)
             picassoWrapper.pauseTag(TAG);
