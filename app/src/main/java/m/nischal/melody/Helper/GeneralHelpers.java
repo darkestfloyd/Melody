@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import m.nischal.melody.R;
@@ -175,6 +174,7 @@ public class GeneralHelpers {
     public static class PicassoHelper {
 
         public static Picasso picassoWrapper;
+        public static final String TAG = "m.nischal.melody.PICASSO_TAG";
 
         public static void initPicasso(Context context) {
             picassoWrapper = Picasso.with(context);
@@ -182,11 +182,11 @@ public class GeneralHelpers {
         }
 
         public static void putInImageView(String path, ImageView imageView) {
-            if (path != null)
-                picassoWrapper
-                        .load(new File(path))
-                        .into(imageView);
-            else picassoWrapper.load(R.drawable.ic_album_black_48dp).into(imageView);
+            picassoWrapper
+                    .load(path)
+                    .tag(TAG)
+                    .error(R.drawable.ic_album_black_48dp)
+                    .into(imageView);
         }
 
     }

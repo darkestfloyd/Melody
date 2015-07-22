@@ -3,6 +3,7 @@ package m.nischal.melody.ui;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -15,7 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.File;
+
 import m.nischal.melody.Helper.BusEvents;
+import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.Helper.ObservableContainer;
 import m.nischal.melody.Helper.RxBus;
 import m.nischal.melody.R;

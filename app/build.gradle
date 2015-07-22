@@ -21,6 +21,8 @@ android {
         applicationId "m.nischal.melody"
         minSdkVersion 17
         targetSdkVersion 22
+
+        testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     buildTypes {
         release {
@@ -45,6 +47,13 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.2.1'
     compile 'io.reactivex:rxandroid:0.25.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile 'com.android.support.test:rules:0.3'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2') {
+        exclude group: 'javax.inject'
+    }
+    androidTestCompile 'com.android.support:support-annotations:22.2.1'
 }
 
 
