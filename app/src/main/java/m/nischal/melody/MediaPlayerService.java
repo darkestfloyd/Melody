@@ -8,7 +8,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
 import java.io.IOException;
@@ -21,13 +20,12 @@ import rx.schedulers.Schedulers;
 
 import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 
-public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
+public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener {
 
     private final static MediaPlayer mPlayer = new MediaPlayer();
     private static boolean foreground = false;
     private static boolean removeAfterComplete = false;
     private static Subscription sc;
-    private Notification notification;
     private final IMelodyPlayer.Stub mBinder = new IMelodyPlayer.Stub() {
 
         @Override
@@ -114,7 +112,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     private void makeForeground() {
-        notification = new NotificationCompat.Builder(this)
+        Notification notification = new NotificationCompat.Builder(this)
                 .setColor(getResources().getColor(R.color.primary_dark))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentText("Text")
@@ -133,14 +131,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mediaPlayer.start();
-    }
-
-    @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        if (removeAfterComplete)
-            stopForeground(true);
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(1);
+        LumberJack.d("music completed!");
+        stopForeground(false);
+        Notification notification = new NotificationCompat.Builder(this)
+                .setColor(getResources().getColor(R.color.primary_dark))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText("Text")
+                .setContentTitle("Hello world!")
+                .setAutoCancel(true)
+                .build();
+        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);
     }
 }
