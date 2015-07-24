@@ -28,6 +28,7 @@
         android:layout_toEndOf="@id/image">
 
         <ImageButton
+            android:id="@+id/action_prev"
             android:layout_width="48dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -36,6 +37,7 @@
             android:src="@drawable/ic_skip_previous_white_36dp" />
 
         <ImageButton
+            android:id="@+id/action_play_pause"
             android:layout_width="48dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -44,6 +46,7 @@
             android:src="@drawable/ic_pause_white_36dp" />
 
         <ImageButton
+            android:id="@+id/action_next"
             android:layout_width="48dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
