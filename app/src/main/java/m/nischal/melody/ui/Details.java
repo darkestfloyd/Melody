@@ -16,9 +16,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.GeneralHelpers;
-import m.nischal.melody.Helper.ObservableContainer;
-import m.nischal.melody.Helper.RxBus;
+import m.nischal.melody.Util.ObservableContainer;
+import m.nischal.melody.Util.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import rx.Observable;

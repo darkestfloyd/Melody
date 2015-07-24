@@ -16,9 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import m.nischal.melody.Helper.BusEvents;
-import m.nischal.melody.Helper.GeneralHelpers;
-import m.nischal.melody.Helper.ObservableContainer;
-import m.nischal.melody.Helper.RxBus;
+import m.nischal.melody.Util.ObservableContainer;
+import m.nischal.melody.Util.RxBus;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;

@@ -35,7 +35,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.ObservableContainer;
+import m.nischal.melody.Util.ObservableContainer;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerItemClickListener;

@@ -30,7 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import m.nischal.melody.Helper.BusEvents;
-import m.nischal.melody.Helper.RxBus;
+import m.nischal.melody.Util.RxBus;
 
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
 

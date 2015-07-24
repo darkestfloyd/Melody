@@ -1,4 +1,4 @@
-package m.nischal.melody.Helper;
+package m.nischal.melody.Util;
 
 /*The MIT License (MIT)
  *
@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
+import m.nischal.melody.Helper.BusEvents;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;

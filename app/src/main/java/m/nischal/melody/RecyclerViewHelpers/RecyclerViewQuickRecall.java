@@ -33,7 +33,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import m.nischal.melody.Helper.BusEvents;
-import m.nischal.melody.Helper.RxBus;
+import m.nischal.melody.Util.RxBus;
 import rx.Subscription;
 
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper.TAG;

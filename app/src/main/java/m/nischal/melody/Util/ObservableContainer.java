@@ -1,4 +1,4 @@
-package m.nischal.melody.Helper;
+package m.nischal.melody.Util;
 
 /*The MIT License (MIT)
  *
@@ -34,7 +34,7 @@ import m.nischal.melody.ObjectModels.Artist;
 import m.nischal.melody.ObjectModels.Genre;
 import m.nischal.melody.ObjectModels.Playlist;
 import m.nischal.melody.ObjectModels.Song;
-import m.nischal.melody.ObjectModels._BaseModel;
+import m.nischal.melody.Util.QueryObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
