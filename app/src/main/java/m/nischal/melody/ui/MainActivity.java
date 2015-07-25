@@ -8,7 +8,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -18,15 +17,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.GeneralHelpers;
-import m.nischal.melody.Helper.Receiver;
 import m.nischal.melody.MediaPlayerPresenter;
+import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .replace(R.id.container, new MainFragment())
                 .commit();
 
-       registerReceiver(new Receiver(), new IntentFilter("complete"));
+        registerReceiver(new Receiver(), new IntentFilter(MediaPlayerService.PLAYER_FINISHED));
     }
 
     @Override
@@ -251,4 +249,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         }
     }
 
+    public class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            GeneralHelpers.DebugHelper.overdose(context, "okay!");
+        }
+    }
 }

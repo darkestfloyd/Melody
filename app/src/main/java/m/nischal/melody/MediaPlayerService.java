@@ -26,6 +26,7 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener {
 
     public static final String RX_BUS_PLAYER_STATE = "m.nischal.melody.PLAYER_STATE_CHANGED";
+    public static final String PLAYER_FINISHED = "m.nischal.melody.SONG_COMPLETED";
     public static final int STATE_PLAYING = 0;
     public static final int STATE_PAUSED = 1;
     public static final int STATE_COMPLETED = 2;
@@ -52,8 +53,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             LumberJack.d("album: " + details.get(2));
             LumberJack.d("artist: " + details.get(3));*/
             setSourceForPlayer(details);
-
-            sendBroadcast(new Intent("complete"));
         }
 
         @Override
@@ -210,10 +209,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         LumberJack.d("music completed!");
         stopForeground(false);
         playerStateChanged(STATE_COMPLETED);
-        checkForNextSong();
-    }
-
-    private void checkForNextSong() {
-        //TODO 
+        sendBroadcast(new Intent(PLAYER_FINISHED));
     }
 }
