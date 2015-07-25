@@ -16,16 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import m.nischal.melody.Helper.BusEvents;
-import m.nischal.melody.Util.ObservableContainer;
-import m.nischal.melody.Util.RxBus;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
+import m.nischal.melody.Util.ObservableContainer;
+import m.nischal.melody.Util.RxBus;
 import m.nischal.melody.ui.widgets.ScrimInsetsFrameLayout;
 import rx.Observer;
 import rx.subscriptions.CompositeSubscription;
 
-import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.*;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 import static m.nischal.melody.MediaPlayerPresenter.Token;
 import static m.nischal.melody.MediaPlayerPresenter.bindToService;
@@ -57,15 +57,14 @@ import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
 public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener, ScrimInsetsFrameLayout.OnInsetsCallback {
 
+    private final CompositeSubscription subscriptions = new CompositeSubscription();
+    private final RxBus rxBus = RxBus.getBus();
+    private Token token;
+
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
-    private RxBus rxBus;
     private Toolbar toolbar;
     private TabLayout tabLayout;
-
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-
-    private Token token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +96,6 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .beginTransaction()
                 .replace(R.id.container, new MainFragment())
                 .commit();
-
-        token = bindToService(this);
     }
 
     @Override
@@ -148,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     }
 
     private void initLibraries() {
-        rxBus = RxBus.getBus();
         subscriptions.add(rxBus.toObservable()
                 .subscribe(busClass -> {
                     if (busClass instanceof BusEvents.RecyclerViewItemClick)
@@ -158,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 }));
         PicassoHelper.initPicasso(this);
         ObservableContainer.initAll(this);
+        token = bindToService(this);
     }
 
     private void playMusic() {
@@ -168,19 +165,20 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .subscribe(new Observer<Song>() {
                     @Override
                     public void onCompleted() {
-                        LumberJack.d("onCompleted called/MainActivity#playMusic");
+                        LumberJack.v("onCompleted called/MainActivity#playMusic");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        LumberJack.d("onError called/MainActivity#playMusic");
+                        LumberJack.e("onError called/MainActivity#playMusic");
                         LumberJack.e(e);
                     }
 
                     @Override
                     public void onNext(Song song) {
-                        LumberJack.d("onNext called/MainActivity#playMusic");
-                        setup(song.getSong_data());
+                        LumberJack.v("onNext called/MainActivity#playMusic");
+                        setup(song.getSong_path());
+                        rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });
     }
@@ -230,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         @Override
         public void onPageSelected(int position) {
             super.onPageSelected(position);
+            LumberJack.v("pager page changed!");
             rxBus.putValue(RxBus.TAG_PAGER_POSITION, position);
             rxBus.publish(new BusEvents.ViewPagerPageChanged());
         }

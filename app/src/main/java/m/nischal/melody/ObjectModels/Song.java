@@ -24,16 +24,14 @@ package m.nischal.melody.ObjectModels;
  */
 
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.util.ArrayMap;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.GeneralHelpers;
-
-import static m.nischal.melody.Helper.GeneralHelpers.*;
-import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.*;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 
 /**
  * <code>Song</code>
@@ -77,8 +75,6 @@ public final class Song extends _BaseModel {
             MediaStore.Audio.Media.DATA
     };
     public static final String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-    private static StringBuilder path = new StringBuilder();
-    private static MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
     final private String song_id, song_title, song_display_name, song_date_added, song_date_modified, song_size,
             song_album, song_album_id, song_artist, song_artist_id, song_bookmark,
             song_duration, song_track, song_year, song_data;
@@ -159,7 +155,7 @@ public final class Song extends _BaseModel {
         return songs;
     }
 
-    public String getSong_data() {
+    public String getSong_path() {
         return song_data;
     }
 
@@ -224,7 +220,7 @@ public final class Song extends _BaseModel {
      */
     @Override
     public String toString() {
-        return "{[ " + song_title + "], [" + song_id + "]}";
+        return "{[" + song_title + "], [" + song_id + "]}";
     }
 
     /**

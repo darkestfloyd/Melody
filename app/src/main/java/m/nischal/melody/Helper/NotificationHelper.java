@@ -28,6 +28,11 @@ import android.widget.RemoteViews;
 
 import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.R;
+import m.nischal.melody.Util.RxBus;
+import rx.Observer;
+import rx.Subscription;
+
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 
 public class NotificationHelper {
 
@@ -37,8 +42,10 @@ public class NotificationHelper {
     private static final Object lock = new Object();
     private final Context context;
     private final NotificationCompat.Builder notificationBuilder;
+    private final RxBus rxBus = RxBus.getBus();
     private RemoteViews remoteViews;
     private Notification notification;
+    private Subscription sc;
 
     private NotificationHelper(Context context) {
         this.context = context;
@@ -48,10 +55,40 @@ public class NotificationHelper {
                         .setColor(context.getResources().getColor(R.color.primary))
                         .setContentText("test")
                         .setContentTitle("title");
+        sc = rxBus.toObservable()
+                .subscribe(getObserver());
     }
 
     public static NotificationHelper getInstance(Context context) {
         return new NotificationHelper(context);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        sc.unsubscribe();
+        super.finalize();
+    }
+
+    private Observer<BusEvents> getObserver() {
+        return new Observer<BusEvents>() {
+            @Override
+            public void onCompleted() {
+                LumberJack.d("onComplete called/NotificationHelper#getObserver");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LumberJack.d("onError called/NotificationHelper#getObserver");
+                LumberJack.e(e);
+            }
+
+            @Override
+            public void onNext(BusEvents busEvents) {
+                LumberJack.d("onComplete called/NotificationHelper#getObserver");
+                if (busEvents instanceof BusEvents.MediaStateChanged)
+                    updateNotification(rxBus.getValue(MediaPlayerService.RX_BUS_PLAYER_STATE, 1));
+            }
+        };
     }
 
     private void setUpRemoteViews() {
@@ -87,14 +124,15 @@ public class NotificationHelper {
         return notification;
     }
 
-    public void updateNotification(String state) {
-        switch (state) {
-            case MediaPlayerService.PLAYER_PLAYING:
+    private void updateNotification(int newState) {
+        switch (newState) {
+            case MediaPlayerService.STATE_PLAYING:
                 remoteViews.setImageViewResource(R.id.action_play_pause, R.drawable.ic_pause_white_36dp);
                 notification.bigContentView = remoteViews;
                 notifyChange();
                 break;
-            case MediaPlayerService.PLAYER_PAUSED:
+            case MediaPlayerService.STATE_COMPLETED:
+            case MediaPlayerService.STATE_PAUSED:
                 remoteViews.setImageViewResource(R.id.action_play_pause, R.drawable.ic_play_arrow_white_36dp);
                 notifyAutoDelete();
                 break;
@@ -112,7 +150,7 @@ public class NotificationHelper {
         }
     }
 
-    public void notifyAutoDelete() {
+    private void notifyAutoDelete() {
         notification = notificationBuilder
                 .setAutoCancel(true)
                 .build();

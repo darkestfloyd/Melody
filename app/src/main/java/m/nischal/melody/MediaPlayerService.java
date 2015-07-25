@@ -9,26 +9,31 @@ import android.os.RemoteException;
 
 import java.io.IOException;
 
+import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.NotificationHelper;
+import m.nischal.melody.Util.RxBus;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener {
 
-    public static final String PLAYER_PLAYING = "m.nischal.melody.PLAYING";
-    public static final String PLAYER_PAUSED = "m.nischal.melody.PAUSED";
+    public static final String RX_BUS_PLAYER_STATE = "m.nischal.melody.PLAYER_STATE_CHANGED";
+    public static final int STATE_PLAYING = 0;
+    public static final int STATE_PAUSED = 1;
+    public static final int STATE_COMPLETED = 2;
 
     private final static MediaPlayer mPlayer = new MediaPlayer();
-    private static String PLAYER_STATE;
     private static boolean foreground = false;
-    private static Subscription sc;
 
+    private RxBus rxBus;
     private NotificationHelper notificationHelper;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     private final IMelodyPlayer.Stub mBinder = new IMelodyPlayer.Stub() {
 
@@ -39,42 +44,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 makeForeground();
             //TODO else part to update notification
 
-            if (mPlayer.isPlaying())
-                mPlayer.stop();
-
-            mPlayer.reset();
-            sc = Observable.just(path)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<String>() {
-                        @Override
-                        public void onCompleted() {
-                            LumberJack.d("onComplete called/in service");
-                            try {
-                                mPlayer.prepare();
-                            } catch (IOException e) {
-                                LumberJack.e(e);
-                            } finally {
-                                mPlayer.start();
-                                PLAYER_STATE = PLAYER_PLAYING;
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            LumberJack.e(e);
-                        }
-
-                        @Override
-                        public void onNext(String s) {
-                            LumberJack.d("onNext called/in service with path: " + s);
-                            try {
-                                mPlayer.setDataSource(getApplicationContext(), Uri.parse(s));
-                            } catch (Exception e) {
-                                LumberJack.e(e);
-                            }
-                        }
-                    });
+            setSourceForPlayer(path);
         }
 
         @Override
@@ -97,31 +67,109 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     };
 
+    private void setSourceForPlayer(String path) {
+
+        mPlayer.reset();
+
+        Subscription sc = Observable.just(path)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getPathObserver());
+        subscriptions.add(sc);
+
+        if (mPlayer.isPlaying())
+            playerStateChanged(STATE_PLAYING);
+    }
+
+    private Observer<String> getPathObserver() {
+        return new Observer<String>() {
+            @Override
+            public void onCompleted() {
+                LumberJack.d("onComplete called/in service");
+                try {
+                    mPlayer.prepare();
+                } catch (IOException e) {
+                    LumberJack.e(e);
+                } finally {
+                    mPlayer.start();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LumberJack.e(e);
+            }
+
+            @Override
+            public void onNext(String s) {
+                LumberJack.d("onNext called/in service with path: " + s);
+                try {
+                    mPlayer.setDataSource(getApplicationContext(), Uri.parse(s));
+                } catch (Exception e) {
+                    LumberJack.e(e);
+                }
+            }
+        };
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         String action = intent.getAction();
 
         if (action != null) {
             actionPerformed(action);
         } else {
             mPlayer.setOnCompletionListener(this);
+            rxBus = RxBus.getBus();
             notificationHelper = NotificationHelper.getInstance(this);
+            subscribeToBus();
         }
         return START_STICKY;
+    }
+
+    private void subscribeToBus() {
+        Subscription sc = rxBus
+                .toObservable()
+                .subscribe(new Observer<BusEvents>() {
+                    @Override
+                    public void onCompleted() {
+                        LumberJack.d("onComplete called/Service#subscribe");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LumberJack.e("onError called/Service#subscribe");
+                        LumberJack.e(e);
+                    }
+
+                    @Override
+                    public void onNext(BusEvents busEvents) {
+                        LumberJack.d("onNext called/Service#subscribe");
+                        LumberJack.d("boolean: ", busEvents instanceof BusEvents.NewSongAddedToQueue && !mPlayer.isPlaying());
+//                        if (busEvents instanceof BusEvents.NewSongAddedToQueue && !mPlayer.isPlaying())
+//                            setSourceForPlayer(nextSongPath());
+                    }
+                });
+        subscriptions.add(sc);
     }
 
     private void changePlayerState() {
         if (mPlayer.isPlaying()) {
             mPlayer.pause();
             stopForeground(false);
-            PLAYER_STATE = PLAYER_PAUSED;
+            rxBus.putValue(RX_BUS_PLAYER_STATE, STATE_PAUSED);
         } else {
             mPlayer.start();
             startForeground(1, notificationHelper.getNotification());
-            PLAYER_STATE = PLAYER_PLAYING;
+            rxBus.putValue(RX_BUS_PLAYER_STATE, STATE_PLAYING);
         }
-        notificationHelper.updateNotification(PLAYER_STATE);
+        playerStateChanged(-1);
+    }
+
+    private void playerStateChanged(int newState) {
+        if (newState != -1)
+            rxBus.putValue(RX_BUS_PLAYER_STATE, newState);
+        rxBus.publish(new BusEvents.MediaStateChanged());
     }
 
     private void actionPerformed(String action) {
@@ -134,7 +182,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public void onDestroy() {
         super.onDestroy();
         mPlayer.release();
-        sc.unsubscribe();
+        subscriptions.unsubscribe();
         stopForeground(true);
     }
 
@@ -152,6 +200,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public void onCompletion(MediaPlayer mediaPlayer) {
         LumberJack.d("music completed!");
         stopForeground(false);
-        notificationHelper.notifyAutoDelete();
+        playerStateChanged(STATE_COMPLETED);
+        checkForNextSong();
+    }
+
+    private void checkForNextSong() {
+        //TODO 
     }
 }

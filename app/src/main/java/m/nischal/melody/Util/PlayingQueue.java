@@ -18,62 +18,101 @@ package m.nischal.melody.Util;
  */
 
 
+import android.support.annotation.CheckResult;
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import m.nischal.melody.ObjectModels.Song;
 import rx.Observable;
 
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
+
 public class PlayingQueue {
 
-    private static PlayingQueue playingQueue;
+    private static PlayingQueue playingQueue = new PlayingQueue();
     private final LinkedList<Song> queue = new LinkedList<>();
-    private int playPosition = -1;
+    private int playPosition = 0;
 
-    public static PlayingQueue getQueueInstance() {
-        if (playingQueue == null)
-            playingQueue = new PlayingQueue();
+    public static PlayingQueue getInstance() {
         return playingQueue;
     }
 
-    public void addToQueue(Song song) {
-        queue.push(song);
+    public void addToQueue(@NonNull Song song) {
+        LumberJack.d("adding to queue: " + song.getSong_title());
+        queue.add(song);
     }
 
-    public void addToQueueAt(int position, Song song) {
+    public void setPlayPosition(@NonNull int position) {
+        playPosition = position;
+    }
+
+    @CheckResult
+    public void addToQueueAt(@NonNull int position, @NonNull Song song) {
         queue.add(position, song);
     }
 
-    public void removeFromQueue(int position) {
+    public void removeFromQueue(@NonNull int position) {
         queue.remove(position);
     }
 
+    @CheckResult
     public Observable<Song> getQueue() {
-        return Observable.from(new ArrayList<Song>(queue));
+        return Observable.from(new ArrayList<>(queue));
     }
 
+    @CheckResult
     public boolean hasNext() {
+        LumberJack.d("queue size: ", queue.size());
+        LumberJack.d("playPosition: ", playPosition);
         return playPosition < queue.size() - 1;
     }
 
+    @CheckResult
     public boolean hasPrev() {
         return playPosition > 0;
     }
 
-    public Song playNext() {
+    @CheckResult
+    public Song nextSong() {
         return queue.get(++playPosition);
     }
 
-    private Song playPrev() {
+    @CheckResult
+    public String nextSongPath() {
+        LumberJack.d("next song path: " + nextSong().getSong_path());
+        return nextSong().getSong_path();
+    }
+
+    @CheckResult
+    public String prevSongPath() {
+        return prevSong().getSong_path();
+    }
+
+    @CheckResult
+    private Song prevSong() {
         return queue.get(--playPosition);
     }
 
+    @CheckResult
+    private Song currentSong() {
+        return queue.get(playPosition);
+    }
+
+    @CheckResult
     public int getSize() {
         return queue.size();
     }
 
-    @Override
-    public String toString() {
-        return "{[" + queue.hashCode() + "], [" + queue.size() + "], [" + queue.getFirst().toString() + "]}";
+    @CheckResult
+    public boolean isEmpty() {
+        return queue.isEmpty();
+    }
+
+    public void printAll() {
+        LumberJack.d("printing! " + queue.size());
+        for (int i = 0; i < queue.size(); ++i)
+            LumberJack.i("pos: " + i + " song: " + queue.get(i).getSong_title());
     }
 }

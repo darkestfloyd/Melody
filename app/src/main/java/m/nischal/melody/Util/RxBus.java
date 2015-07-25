@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
 import m.nischal.melody.Helper.BusEvents;
+import m.nischal.melody.Helper.GeneralHelpers;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
@@ -70,6 +71,7 @@ public class RxBus {
     public static RxBus getBus() {
         if (rxBus == null)
             rxBus = new RxBus();
+        GeneralHelpers.DebugHelper.LumberJack.d("bus code: " + rxBus.hashCode());
         return rxBus;
     }
 
