@@ -25,6 +25,7 @@ import java.util.List;
 
 import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.GeneralHelpers;
+import m.nischal.melody.Helper.Receiver;
 import m.nischal.melody.MediaPlayerPresenter;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
@@ -106,12 +107,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .replace(R.id.container, new MainFragment())
                 .commit();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                GeneralHelpers.DebugHelper.overdose(MainActivity.this, "all systems go!");
-            }
-        }, new IntentFilter("complete"));
+       registerReceiver(new Receiver(), new IntentFilter("complete"));
     }
 
     @Override

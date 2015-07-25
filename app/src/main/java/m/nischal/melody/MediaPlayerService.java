@@ -53,7 +53,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             LumberJack.d("artist: " + details.get(3));*/
             setSourceForPlayer(details);
 
-            LocalBroadcastManager.getInstance(MediaPlayerService.this).sendBroadcast(new Intent("complete"));
+            sendBroadcast(new Intent("complete"));
         }
 
         @Override
