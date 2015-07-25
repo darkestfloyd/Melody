@@ -98,7 +98,7 @@ public class NotificationHelper {
     private void setUpRemoteViews() {
         remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_expanded);
         remoteViews.setInt(R.id.notificationView, "setBackgroundColor", context.getResources().getColor(R.color.primary));
-        remoteViews.setString(R.id.title, "setText", details.get(1));
+        remoteViews.setTextViewText(R.id.title, details.get(1));
 
         Intent i1 = new Intent(context, MediaPlayerService.class);
         i1.setAction(ACTION_PLAY_PAUSE);
