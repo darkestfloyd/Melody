@@ -28,6 +28,8 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 
+import java.util.List;
+
 import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 
 public class MediaPlayerPresenter {
@@ -86,10 +88,10 @@ public class MediaPlayerPresenter {
         }
     }
 
-    public static boolean setup(@NonNull String path) {
+    public static boolean setup(@NonNull List<String> details) {
         LumberJack.d("setting up");
         try {
-            mService.setDataSource(path);
+            mService.setDataSource(details);
             return true;
         } catch (RemoteException e) {
             report(e);

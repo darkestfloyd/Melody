@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import java.io.IOException;
+import java.util.List;
 
 import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.NotificationHelper;
@@ -38,13 +39,18 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private final IMelodyPlayer.Stub mBinder = new IMelodyPlayer.Stub() {
 
         @Override
-        public void setDataSource(String path) throws RemoteException {
+        public void setDataSource(List<String> details) throws RemoteException {
 
             if (!foreground)
-                makeForeground();
+                makeForeground(details);
             //TODO else part to update notification
 
-            setSourceForPlayer(path);
+
+            /*LumberJack.d("path: " + details.get(0));
+            LumberJack.d("title: " + details.get(1));
+            LumberJack.d("album: " + details.get(2));
+            LumberJack.d("artist: " + details.get(3));*/
+            setSourceForPlayer(details);
         }
 
         @Override
@@ -67,11 +73,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     };
 
-    private void setSourceForPlayer(String path) {
+    private void setSourceForPlayer(List<String> details) {
 
         mPlayer.reset();
 
-        Subscription sc = Observable.just(path)
+        Subscription sc = Observable.just(details.get(0))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getPathObserver());
@@ -186,8 +192,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         stopForeground(true);
     }
 
-    private void makeForeground() {
-        startForeground(1, notificationHelper.buildNormal());
+    private void makeForeground(List<String> details) {
+        startForeground(1, notificationHelper.buildNormal(details));
         foreground = true;
     }
 

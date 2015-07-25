@@ -26,6 +26,9 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.R;
 import m.nischal.melody.Util.RxBus;
@@ -46,6 +49,7 @@ public class NotificationHelper {
     private RemoteViews remoteViews;
     private Notification notification;
     private Subscription sc;
+    private List<String> details = new ArrayList<>();
 
     private NotificationHelper(Context context) {
         this.context = context;
@@ -94,6 +98,7 @@ public class NotificationHelper {
     private void setUpRemoteViews() {
         remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_expanded);
         remoteViews.setInt(R.id.notificationView, "setBackgroundColor", context.getResources().getColor(R.color.primary));
+        remoteViews.setString(R.id.title, "setText", details.get(1));
 
         Intent i1 = new Intent(context, MediaPlayerService.class);
         i1.setAction(ACTION_PLAY_PAUSE);
@@ -112,7 +117,9 @@ public class NotificationHelper {
         remoteViews.setOnClickPendingIntent(R.id.action_play_pause, p1);
     }
 
-    public Notification buildNormal() {
+    public Notification buildNormal(List<String> details) {
+
+        this.details = details;
 
         setUpRemoteViews();
 

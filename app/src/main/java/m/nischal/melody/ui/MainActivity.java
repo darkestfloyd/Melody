@@ -15,7 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import m.nischal.melody.Helper.BusEvents;
+import m.nischal.melody.MediaPlayerPresenter;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
@@ -29,7 +33,6 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 import static m.nischal.melody.MediaPlayerPresenter.Token;
 import static m.nischal.melody.MediaPlayerPresenter.bindToService;
-import static m.nischal.melody.MediaPlayerPresenter.setup;
 import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
 /*The MIT License (MIT)
@@ -177,7 +180,12 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     @Override
                     public void onNext(Song song) {
                         LumberJack.v("onNext called/MainActivity#playMusic");
-                        setup(song.getSong_path());
+                        List<String> details = new ArrayList<String>();
+                        details.add(song.getSong_path());
+                        details.add(song.getSong_title());
+                        details.add(song.getSong_album());
+                        details.add(song.getSong_artist());
+                        MediaPlayerPresenter.setup(details);
                         rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });
