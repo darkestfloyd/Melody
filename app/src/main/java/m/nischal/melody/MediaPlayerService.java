@@ -6,8 +6,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.IOException;
+import java.util.List;
 
 import m.nischal.melody.Helper.BusEvents;
 import m.nischal.melody.Helper.NotificationHelper;
@@ -24,6 +26,7 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener {
 
     public static final String RX_BUS_PLAYER_STATE = "m.nischal.melody.PLAYER_STATE_CHANGED";
+    public static final String PLAYER_FINISHED = "m.nischal.melody.SONG_COMPLETED";
     public static final int STATE_PLAYING = 0;
     public static final int STATE_PAUSED = 1;
     public static final int STATE_COMPLETED = 2;
@@ -38,13 +41,18 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private final IMelodyPlayer.Stub mBinder = new IMelodyPlayer.Stub() {
 
         @Override
-        public void setDataSource(String path) throws RemoteException {
+        public void setDataSource(List<String> details) throws RemoteException {
 
             if (!foreground)
-                makeForeground();
+                makeForeground(details);
             //TODO else part to update notification
 
-            setSourceForPlayer(path);
+
+            /*LumberJack.d("path: " + details.get(0));
+            LumberJack.d("title: " + details.get(1));
+            LumberJack.d("album: " + details.get(2));
+            LumberJack.d("artist: " + details.get(3));*/
+            setSourceForPlayer(details);
         }
 
         @Override
@@ -67,11 +75,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     };
 
-    private void setSourceForPlayer(String path) {
+    private void setSourceForPlayer(List<String> details) {
 
         mPlayer.reset();
 
-        Subscription sc = Observable.just(path)
+        Subscription sc = Observable.just(details.get(0))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getPathObserver());
@@ -186,8 +194,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         stopForeground(true);
     }
 
-    private void makeForeground() {
-        startForeground(1, notificationHelper.buildNormal());
+    private void makeForeground(List<String> details) {
+        startForeground(1, notificationHelper.buildNormal(details));
         foreground = true;
     }
 
@@ -201,10 +209,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         LumberJack.d("music completed!");
         stopForeground(false);
         playerStateChanged(STATE_COMPLETED);
-        checkForNextSong();
-    }
-
-    private void checkForNextSong() {
-        //TODO 
+        sendBroadcast(new Intent(PLAYER_FINISHED));
     }
 }

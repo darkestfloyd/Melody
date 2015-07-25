@@ -1,6 +1,9 @@
 package m.nischal.melody.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -15,7 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import m.nischal.melody.Helper.BusEvents;
+import m.nischal.melody.Helper.GeneralHelpers;
+import m.nischal.melody.MediaPlayerPresenter;
+import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
@@ -29,7 +38,6 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 import static m.nischal.melody.MediaPlayerPresenter.Token;
 import static m.nischal.melody.MediaPlayerPresenter.bindToService;
-import static m.nischal.melody.MediaPlayerPresenter.setup;
 import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
 /*The MIT License (MIT)
@@ -96,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .beginTransaction()
                 .replace(R.id.container, new MainFragment())
                 .commit();
+
+        registerReceiver(new Receiver(), new IntentFilter(MediaPlayerService.PLAYER_FINISHED));
     }
 
     @Override
@@ -177,7 +187,12 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     @Override
                     public void onNext(Song song) {
                         LumberJack.v("onNext called/MainActivity#playMusic");
-                        setup(song.getSong_path());
+                        List<String> details = new ArrayList<String>();
+                        details.add(song.getSong_path());
+                        details.add(song.getSong_title());
+                        details.add(song.getSong_album());
+                        details.add(song.getSong_artist());
+                        MediaPlayerPresenter.setup(details);
                         rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });
@@ -234,4 +249,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         }
     }
 
+    public class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            GeneralHelpers.DebugHelper.overdose(context, "okay!");
+        }
+    }
 }
