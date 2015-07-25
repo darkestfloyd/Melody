@@ -1,10 +1,14 @@
 package m.nischal.melody.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -14,11 +18,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import m.nischal.melody.Helper.BusEvents;
+import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.MediaPlayerPresenter;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
@@ -99,6 +105,13 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .beginTransaction()
                 .replace(R.id.container, new MainFragment())
                 .commit();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                GeneralHelpers.DebugHelper.overdose(MainActivity.this, "all systems go!");
+            }
+        }, new IntentFilter("complete"));
     }
 
     @Override

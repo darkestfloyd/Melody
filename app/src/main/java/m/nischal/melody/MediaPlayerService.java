@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,6 +52,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             LumberJack.d("album: " + details.get(2));
             LumberJack.d("artist: " + details.get(3));*/
             setSourceForPlayer(details);
+
+            LocalBroadcastManager.getInstance(MediaPlayerService.this).sendBroadcast(new Intent("complete"));
         }
 
         @Override
