@@ -6,12 +6,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.IOException;
 import java.util.List;
 
-import m.nischal.melody.Helper.BusEvents;
+import m.nischal.melody.Util.BusEvents;
 import m.nischal.melody.Helper.NotificationHelper;
 import m.nischal.melody.Util.RxBus;
 import rx.Observable;

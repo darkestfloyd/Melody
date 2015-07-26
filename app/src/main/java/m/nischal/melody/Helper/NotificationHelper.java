@@ -31,6 +31,7 @@ import java.util.List;
 
 import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.R;
+import m.nischal.melody.Util.BusEvents;
 import m.nischal.melody.Util.RxBus;
 import rx.Observer;
 import rx.Subscription;

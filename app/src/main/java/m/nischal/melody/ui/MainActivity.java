@@ -18,17 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import m.nischal.melody.Helper.BusEvents;
-import m.nischal.melody.Helper.GeneralHelpers;
-import m.nischal.melody.MediaPlayerPresenter;
 import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
+import m.nischal.melody.Util.BusEvents;
 import m.nischal.melody.Util.ObservableContainer;
+import m.nischal.melody.Util.PlayingQueue;
 import m.nischal.melody.Util.RxBus;
 import m.nischal.melody.ui.widgets.ScrimInsetsFrameLayout;
 import rx.Observer;
@@ -38,6 +34,8 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 import static m.nischal.melody.MediaPlayerPresenter.Token;
 import static m.nischal.melody.MediaPlayerPresenter.bindToService;
+import static m.nischal.melody.MediaPlayerPresenter.isPlaying;
+import static m.nischal.melody.MediaPlayerPresenter.setup;
 import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
 /*The MIT License (MIT)
@@ -67,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     private final CompositeSubscription subscriptions = new CompositeSubscription();
     private final RxBus rxBus = RxBus.getBus();
+    private final PlayingQueue queue = PlayingQueue.getInstance();
     private Token token;
-
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
@@ -186,13 +184,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
                     @Override
                     public void onNext(Song song) {
-                        LumberJack.v("onNext called/MainActivity#playMusic");
-                        List<String> details = new ArrayList<String>();
-                        details.add(song.getSong_path());
-                        details.add(song.getSong_title());
-                        details.add(song.getSong_album());
-                        details.add(song.getSong_artist());
-                        MediaPlayerPresenter.setup(details);
+                        queue.addToQueue(song);
+                        LumberJack.v("onNext called/MainActivity#playMusic and condition:  ", !isPlaying());
+                        if (queue.getSize() == 1)
+                            setup(queue.parseNextSong());
                         rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });
@@ -252,7 +247,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     public class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            GeneralHelpers.DebugHelper.overdose(context, "okay!");
+            if (queue.hasNext())
+                setup(queue.parseNextSong());
         }
     }
 }

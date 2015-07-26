@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import m.nischal.melody.ObjectModels.Song;
 import rx.Observable;
@@ -33,7 +34,10 @@ public class PlayingQueue {
 
     private static PlayingQueue playingQueue = new PlayingQueue();
     private final LinkedList<Song> queue = new LinkedList<>();
-    private int playPosition = 0;
+    private int playPosition = -1;
+
+    private PlayingQueue() {
+    }
 
     public static PlayingQueue getInstance() {
         return playingQueue;
@@ -42,6 +46,16 @@ public class PlayingQueue {
     public void addToQueue(@NonNull Song song) {
         LumberJack.d("adding to queue: " + song.getSong_title());
         queue.add(song);
+    }
+
+    public List<String> parseNextSong() {
+        Song song = this.nextSong();
+        List<String> details = new ArrayList<>();
+        details.add(song.getSong_path());
+        details.add(song.getSong_title());
+        details.add(song.getSong_album());
+        details.add(song.getSong_artist());
+        return details;
     }
 
     public void setPlayPosition(@NonNull int position) {

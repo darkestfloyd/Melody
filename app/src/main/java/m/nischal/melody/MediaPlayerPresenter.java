@@ -110,6 +110,16 @@ public class MediaPlayerPresenter {
         }
     }
 
+    public static boolean isPlaying() {
+        try {
+            mService.isPlaying();
+            return true;
+        } catch (RemoteException e) {
+            report(e);
+            return false;
+        }
+    }
+
     private static void report(Exception e) {
         e.printStackTrace();
         LumberJack.e(e);

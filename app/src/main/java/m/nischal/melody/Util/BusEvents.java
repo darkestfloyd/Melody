@@ -1,4 +1,4 @@
-package m.nischal.melody.Helper;
+package m.nischal.melody.Util;
 
 /*
  * Copyright 2015 Nischal M
