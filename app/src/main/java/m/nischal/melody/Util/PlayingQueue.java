@@ -50,6 +50,15 @@ public class PlayingQueue {
 
     public List<String> parseNextSong() {
         Song song = this.nextSong();
+        return parseSong(song);
+    }
+
+    public List<String> parsePrevSong() {
+        Song song = this.prevSong();
+        return parseSong(song);
+    }
+
+    private List<String> parseSong(Song song) {
         List<String> details = new ArrayList<>();
         details.add(song.getSong_path());
         details.add(song.getSong_title());
@@ -78,9 +87,7 @@ public class PlayingQueue {
 
     @CheckResult
     public boolean hasNext() {
-        LumberJack.d("queue size: ", queue.size());
-        LumberJack.d("playPosition: ", playPosition);
-        return playPosition < queue.size() - 1;
+        return playPosition < queue.size();
     }
 
     @CheckResult
@@ -125,8 +132,7 @@ public class PlayingQueue {
     }
 
     public void printAll() {
-        LumberJack.d("printing! " + queue.size());
-        for (int i = 0; i < queue.size(); ++i)
-            LumberJack.i("pos: " + i + " song: " + queue.get(i).getSong_title());
+        LumberJack.d("queue size: ", queue.size());
+        LumberJack.d("playPosition: ", playPosition);
     }
 }

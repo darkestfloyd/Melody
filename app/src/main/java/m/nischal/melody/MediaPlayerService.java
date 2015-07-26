@@ -10,8 +10,8 @@ import android.os.RemoteException;
 import java.io.IOException;
 import java.util.List;
 
-import m.nischal.melody.Util.BusEvents;
 import m.nischal.melody.Helper.NotificationHelper;
+import m.nischal.melody.Util.BusEvents;
 import m.nischal.melody.Util.RxBus;
 import rx.Observable;
 import rx.Observer;
@@ -25,13 +25,16 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener {
 
     public static final String RX_BUS_PLAYER_STATE = "m.nischal.melody.PLAYER_STATE_CHANGED";
-    public static final String PLAYER_FINISHED = "m.nischal.melody.SONG_COMPLETED";
+    public static final String BROADCAST_INTENT = "m.nischal.melody.MediaPlayerService.INTENT";
+    public static final String NOTIFICATION_ACTION_NEXT = "m.nischal.melody.NOTIFICATION_ACTION_NEXT";
+    public static final String NOTIFICATION_ACTION_PREV = "m.nischal.melody.NOTIFICATION_ACTION_PREV";
+    public static final String NOTIFICATION_PLAY_COMPLETED = "m.nischal.melody.SONG_COMPLETED";
     public static final int STATE_PLAYING = 0;
     public static final int STATE_PAUSED = 1;
     public static final int STATE_COMPLETED = 2;
 
     private final static MediaPlayer mPlayer = new MediaPlayer();
-    private static boolean foreground = false;
+    private final Intent broadcastIntent = new Intent(BROADCAST_INTENT);
 
     private RxBus rxBus;
     private NotificationHelper notificationHelper;
@@ -43,7 +46,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         public void setDataSource(List<String> details) throws RemoteException {
 
             //if (!foreground)
-                makeForeground(details);
+            makeForeground(details);
             //TODO else part to update notification
 
 
@@ -180,9 +183,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void actionPerformed(String action) {
+        LumberJack.d("action type: " + action);
         if (action.equals(NotificationHelper.ACTION_PLAY_PAUSE))
             changePlayerState();
-        else mPlayer.stop();
+        else {
+            LumberJack.d("else part");
+            if (action.equals(NotificationHelper.ACTION_NEXT))
+                broadcastIntent.setAction(NOTIFICATION_ACTION_NEXT);
+            else if (action.equals(NotificationHelper.ACTION_PREV))
+                broadcastIntent.setAction(NOTIFICATION_ACTION_PREV);
+            sendBroadcast(broadcastIntent);
+        }
     }
 
     @Override
@@ -195,7 +206,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void makeForeground(List<String> details) {
         startForeground(1, notificationHelper.buildNormal(details));
-        foreground = true;
     }
 
     @Override
@@ -208,6 +218,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         LumberJack.d("music completed!");
         stopForeground(false);
         playerStateChanged(STATE_COMPLETED);
-        sendBroadcast(new Intent(PLAYER_FINISHED));
+        broadcastIntent.setAction(NOTIFICATION_PLAY_COMPLETED);
+        sendBroadcast(broadcastIntent);
     }
 }

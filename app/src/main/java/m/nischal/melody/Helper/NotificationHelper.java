@@ -114,9 +114,9 @@ public class NotificationHelper {
         remoteViews.setInt(R.id.notificationView, "setBackgroundColor", context.getResources().getColor(R.color.primary));
         remoteViews.setTextViewText(R.id.title, details.get(1));
 
+        remoteViews.setOnClickPendingIntent(R.id.action_play_pause, p1);
         remoteViews.setOnClickPendingIntent(R.id.action_next, p2);
         remoteViews.setOnClickPendingIntent(R.id.action_prev, p3);
-        remoteViews.setOnClickPendingIntent(R.id.action_play_pause, p1);
     }
 
     public Notification buildNormal(List<String> details) {

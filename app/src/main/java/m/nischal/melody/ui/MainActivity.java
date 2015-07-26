@@ -34,7 +34,6 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 import static m.nischal.melody.MediaPlayerPresenter.Token;
 import static m.nischal.melody.MediaPlayerPresenter.bindToService;
-import static m.nischal.melody.MediaPlayerPresenter.isPlaying;
 import static m.nischal.melody.MediaPlayerPresenter.setup;
 import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
@@ -66,6 +65,24 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private final CompositeSubscription subscriptions = new CompositeSubscription();
     private final RxBus rxBus = RxBus.getBus();
     private final PlayingQueue queue = PlayingQueue.getInstance();
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String actionType = intent.getAction();
+            LumberJack.d("Broadcast received with action: " + actionType);
+            if ((actionType.equals(MediaPlayerService.NOTIFICATION_PLAY_COMPLETED)
+                    || actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_NEXT))
+                    && queue.hasNext()) {
+                LumberJack.d("setting up next song!");
+                setup(queue.parseNextSong());
+            } else if (actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_PREV) && queue.hasPrev()) {
+                LumberJack.d("setting up prev song!");
+                setup(queue.parsePrevSong());
+            }
+        }
+    };
+
     private Token token;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
@@ -103,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .replace(R.id.container, new MainFragment())
                 .commit();
 
-        registerReceiver(new Receiver(), new IntentFilter(MediaPlayerService.PLAYER_FINISHED));
+        registerReceiver(receiver, new IntentFilter(MediaPlayerService.BROADCAST_INTENT));
     }
 
     @Override
@@ -185,7 +202,6 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     @Override
                     public void onNext(Song song) {
                         queue.addToQueue(song);
-                        LumberJack.v("onNext called/MainActivity#playMusic and condition:  ", !isPlaying());
                         if (queue.getSize() == 1)
                             setup(queue.parseNextSong());
                         rxBus.publish(new BusEvents.NewSongAddedToQueue());
@@ -241,14 +257,6 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
             LumberJack.v("pager page changed!");
             rxBus.putValue(RxBus.TAG_PAGER_POSITION, position);
             rxBus.publish(new BusEvents.ViewPagerPageChanged());
-        }
-    }
-
-    public class Receiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (queue.hasNext())
-                setup(queue.parseNextSong());
         }
     }
 }
