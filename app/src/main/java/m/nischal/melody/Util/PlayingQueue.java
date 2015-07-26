@@ -87,7 +87,7 @@ public class PlayingQueue {
 
     @CheckResult
     public boolean hasNext() {
-        return playPosition < queue.size();
+        return playPosition < queue.size() - 1;
     }
 
     @CheckResult

@@ -25,7 +25,8 @@ import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener {
 
     public static final String RX_BUS_PLAYER_STATE = "m.nischal.melody.PLAYER_STATE_CHANGED";
-    public static final String BROADCAST_INTENT = "m.nischal.melody.MediaPlayerService.INTENT";
+    public static final String BROADCAST_INTENT = "m.nischal.melody.MediaPlayerService.BROADCAST_INTENT";
+    public static final String BROADCAST_TYPE = "m.nischal.melody.MediaPlayerService.BROADCAST_TYPE";
     public static final String NOTIFICATION_ACTION_NEXT = "m.nischal.melody.NOTIFICATION_ACTION_NEXT";
     public static final String NOTIFICATION_ACTION_PREV = "m.nischal.melody.NOTIFICATION_ACTION_PREV";
     public static final String NOTIFICATION_PLAY_COMPLETED = "m.nischal.melody.SONG_COMPLETED";
@@ -189,9 +190,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         else {
             LumberJack.d("else part");
             if (action.equals(NotificationHelper.ACTION_NEXT))
-                broadcastIntent.setAction(NOTIFICATION_ACTION_NEXT);
+                broadcastIntent.putExtra(BROADCAST_TYPE, NOTIFICATION_ACTION_NEXT);
             else if (action.equals(NotificationHelper.ACTION_PREV))
-                broadcastIntent.setAction(NOTIFICATION_ACTION_PREV);
+                broadcastIntent.putExtra(BROADCAST_TYPE, NOTIFICATION_ACTION_PREV);
             sendBroadcast(broadcastIntent);
         }
     }
@@ -218,7 +219,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         LumberJack.d("music completed!");
         stopForeground(false);
         playerStateChanged(STATE_COMPLETED);
-        broadcastIntent.setAction(NOTIFICATION_PLAY_COMPLETED);
+        broadcastIntent.putExtra(BROADCAST_TYPE, NOTIFICATION_PLAY_COMPLETED);
         sendBroadcast(broadcastIntent);
     }
 }

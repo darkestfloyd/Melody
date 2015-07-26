@@ -69,7 +69,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String actionType = intent.getAction();
+            String actionType = intent.getExtras().getString(MediaPlayerService.BROADCAST_TYPE);
+            if(actionType == null)
+                return;
             LumberJack.d("Broadcast received with action: " + actionType);
             if ((actionType.equals(MediaPlayerService.NOTIFICATION_PLAY_COMPLETED)
                     || actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_NEXT))
