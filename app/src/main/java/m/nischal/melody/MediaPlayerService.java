@@ -42,7 +42,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         @Override
         public void setDataSource(List<String> details) throws RemoteException {
 
-            if (!foreground)
+            //if (!foreground)
                 makeForeground(details);
             //TODO else part to update notification
 

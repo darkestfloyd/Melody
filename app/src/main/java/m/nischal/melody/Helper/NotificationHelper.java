@@ -47,6 +47,7 @@ public class NotificationHelper {
     private final Context context;
     private final NotificationCompat.Builder notificationBuilder;
     private final RxBus rxBus = RxBus.getBus();
+    private final PendingIntent p1, p2, p3;
     private RemoteViews remoteViews;
     private Notification notification;
     private Subscription sc;
@@ -62,6 +63,19 @@ public class NotificationHelper {
                         .setContentTitle("title");
         sc = rxBus.toObservable()
                 .subscribe(getObserver());
+        remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_expanded);
+
+        Intent i1 = new Intent(context, MediaPlayerService.class);
+        i1.setAction(ACTION_PLAY_PAUSE);
+        p1 = PendingIntent.getService(context, 0x2, i1, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent i2 = new Intent(context, MediaPlayerService.class);
+        i2.setAction(ACTION_NEXT);
+        p2 = PendingIntent.getService(context, 0x2, i2, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent i3 = new Intent(context, MediaPlayerService.class);
+        i3.setAction(ACTION_PREV);
+        p3 = PendingIntent.getService(context, 0x2, i3, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static NotificationHelper getInstance(Context context) {
@@ -97,21 +111,8 @@ public class NotificationHelper {
     }
 
     private void setUpRemoteViews() {
-        remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_expanded);
         remoteViews.setInt(R.id.notificationView, "setBackgroundColor", context.getResources().getColor(R.color.primary));
         remoteViews.setTextViewText(R.id.title, details.get(1));
-
-        Intent i1 = new Intent(context, MediaPlayerService.class);
-        i1.setAction(ACTION_PLAY_PAUSE);
-        PendingIntent p1 = PendingIntent.getService(context, 0x2, i1, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent i2 = new Intent(context, MediaPlayerService.class);
-        i2.setAction(ACTION_NEXT);
-        PendingIntent p2 = PendingIntent.getService(context, 0x2, i2, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent i3 = new Intent(context, MediaPlayerService.class);
-        i3.setAction(ACTION_PREV);
-        PendingIntent p3 = PendingIntent.getService(context, 0x2, i3, PendingIntent.FLAG_UPDATE_CURRENT);
 
         remoteViews.setOnClickPendingIntent(R.id.action_next, p2);
         remoteViews.setOnClickPendingIntent(R.id.action_prev, p3);
@@ -135,6 +136,7 @@ public class NotificationHelper {
     private void updateNotification(int newState) {
         switch (newState) {
             case MediaPlayerService.STATE_PLAYING:
+                setUpRemoteViews();
                 remoteViews.setImageViewResource(R.id.action_play_pause, R.drawable.ic_pause_white_36dp);
                 notification.bigContentView = remoteViews;
                 notifyChange();
