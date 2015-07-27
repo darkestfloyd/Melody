@@ -21,6 +21,8 @@ android {
         applicationId "m.nischal.melody"
         minSdkVersion 17
         targetSdkVersion 22
+
+        testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     buildTypes {
         release {

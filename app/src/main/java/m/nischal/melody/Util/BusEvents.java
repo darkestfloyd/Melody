@@ -1,4 +1,4 @@
-package m.nischal.melody.Helper;
+package m.nischal.melody.Util;
 
 /*
  * Copyright 2015 Nischal M
@@ -25,6 +25,9 @@ package m.nischal.melody.Helper;
  */
 public class BusEvents {
 
+    {
+    }
+
     /**
      * Used for debugging
      */
@@ -47,6 +50,18 @@ public class BusEvents {
      * Debug media control object.
      */
     public static class MediaControl extends BusEvents {
+    }
+
+    /**
+     * Passed when the player state is changed.
+     */
+    public static class MediaStateChanged extends BusEvents {
+    }
+
+    /**
+     * Passed when a new song is added to the queue.
+     */
+    public static class NewSongAddedToQueue extends BusEvents {
     }
 
 }

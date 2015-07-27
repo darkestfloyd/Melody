@@ -23,6 +23,7 @@ package m.nischal.melody.ObjectModels;
  *    THE SOFTWARE.
  */
 
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -41,22 +42,26 @@ public final class Album extends _BaseModel {
 
     public static final int ALBUM_ID = 0;
     public static final int ALBUM_COLUMN = 1;
-    public static final int ALBUM_ART_COLUMN = 2;
-    public static final int ARTIST_COLUMN = 3;
-    public static final int FIRST_YEAR_COLUMN = 4;
-    public static final int LAST_YEAR_COLUMN = 5;
-    public static final int NUMBER_OF_SONGS_COLUMN = 6;
+    public static final int ARTIST_COLUMN = 2;
+    public static final int FIRST_YEAR_COLUMN = 3;
+    public static final int LAST_YEAR_COLUMN = 4;
+    public static final int NUMBER_OF_SONGS_COLUMN = 5;
     public static final Uri album_uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
     public static final String[] album_projections = {
             MediaStore.Audio.Albums._ID,
             MediaStore.Audio.Albums.ALBUM,
-            MediaStore.Audio.Albums.ALBUM_ART,
             MediaStore.Audio.Albums.ARTIST,
             MediaStore.Audio.Albums.FIRST_YEAR,
             MediaStore.Audio.Albums.LAST_YEAR,
             MediaStore.Audio.Albums.NUMBER_OF_SONGS,
     };
-    final private String album_id, album_name, album_art, album_artist, album_number_of_songs, album_first_year, album_last_year;
+    final private Long album_id;
+    final private String album_name;
+    final private String album_art;
+    final private String album_artist;
+    final private String album_number_of_songs;
+    final private String album_first_year;
+    final private String album_last_year;
 
     /**
      * Constructor for Album object.
@@ -69,7 +74,7 @@ public final class Album extends _BaseModel {
      * @param album_last_year       The year in which the latest songs on this album_name were released.
      * @param album_number_of_songs The number of songs on this album_name.
      */
-    private Album(String album_id, String album_name, String album_art, String album_artist
+    private Album(Long album_id, String album_name, String album_art, String album_artist
             , String album_first_year, String album_last_year, String album_number_of_songs) {
         this.album_id = album_id;
         this.album_name = album_name;
@@ -93,12 +98,15 @@ public final class Album extends _BaseModel {
             c.moveToFirst();
             do {
                 String album = c.getString(ALBUM_COLUMN);
-                String album_art = c.getString(ALBUM_ART_COLUMN);
                 String album_artist = c.getString(ARTIST_COLUMN);
                 String album_fy = c.getString(FIRST_YEAR_COLUMN);
                 String album_ly = c.getString(LAST_YEAR_COLUMN);
                 String album_num = c.getString(NUMBER_OF_SONGS_COLUMN);
-                String album_id = c.getString(ALBUM_ID);
+                Long album_id = c.getLong(ALBUM_ID);
+
+                String album_art = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"),
+                        album_id).toString();
+
                 albums.add(new Album(album_id, album, album_art, album_artist, album_fy, album_ly, album_num));
             } while (c.moveToNext());
         }
@@ -148,7 +156,7 @@ public final class Album extends _BaseModel {
         return album_last_year;
     }
 
-    public String getAlbum_id() {
+    public Long getAlbum_id() {
         return album_id;
     }
 

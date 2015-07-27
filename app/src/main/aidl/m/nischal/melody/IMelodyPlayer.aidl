@@ -1,11 +1,11 @@
 // IMelodyPlayer.aidl
 package m.nischal.melody;
 
-// Declare any non-default types here with import statements
-
 interface IMelodyPlayer {
 
-   void setDataSource(String path);
-   void play();
+   oneway void setDataSource(in List<String> details);
+   oneway void play();
+   oneway void killService();
+   boolean isPlaying();
 
 }

@@ -1,13 +1,11 @@
 package m.nischal.melody.ui;
 
-import android.content.ComponentName;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -20,18 +18,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import m.nischal.melody.Helper.BusEvents;
-import m.nischal.melody.Helper.ObservableContainer;
-import m.nischal.melody.Helper.RxBus;
-import m.nischal.melody.IMelodyPlayer;
 import m.nischal.melody.MediaPlayerService;
+import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
 import m.nischal.melody.RecyclerViewHelpers.RecyclerViewQuickRecall;
+import m.nischal.melody.Util.BusEvents;
+import m.nischal.melody.Util.ObservableContainer;
+import m.nischal.melody.Util.PlayingQueue;
+import m.nischal.melody.Util.RxBus;
 import m.nischal.melody.ui.widgets.ScrimInsetsFrameLayout;
+import rx.Observer;
 import rx.subscriptions.CompositeSubscription;
 
-import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
 import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
+import static m.nischal.melody.MediaPlayerPresenter.Token;
+import static m.nischal.melody.MediaPlayerPresenter.bindToService;
+import static m.nischal.melody.MediaPlayerPresenter.setup;
+import static m.nischal.melody.MediaPlayerPresenter.unbindFromService;
 
 /*The MIT License (MIT)
  *
@@ -58,28 +62,34 @@ import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 
 public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener, ScrimInsetsFrameLayout.OnInsetsCallback {
 
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    private DrawerLayout drawerLayout;
-    private RxBus rxBus;
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
+    private final CompositeSubscription subscriptions = new CompositeSubscription();
+    private final RxBus rxBus = RxBus.getBus();
+    private final PlayingQueue queue = PlayingQueue.getInstance();
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private boolean bound = false;
-    private IMelodyPlayer connectedService;
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            connectedService = IMelodyPlayer.Stub.asInterface(iBinder);
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            connectedService = null;
-            bound = false;
+        public void onReceive(Context context, Intent intent) {
+            String actionType = intent.getExtras().getString(MediaPlayerService.BROADCAST_TYPE);
+            if(actionType == null)
+                return;
+            LumberJack.d("Broadcast received with action: " + actionType);
+            if ((actionType.equals(MediaPlayerService.NOTIFICATION_PLAY_COMPLETED)
+                    || actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_NEXT))
+                    && queue.hasNext()) {
+                LumberJack.d("setting up next song!");
+                setup(queue.parseNextSong());
+            } else if (actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_PREV) && queue.hasPrev()) {
+                LumberJack.d("setting up prev song!");
+                setup(queue.parsePrevSong());
+            }
         }
     };
+
+    private Token token;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout drawerLayout;
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +122,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 .replace(R.id.container, new MainFragment())
                 .commit();
 
-        Intent intent = new Intent(this, MediaPlayerService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        registerReceiver(receiver, new IntentFilter(MediaPlayerService.BROADCAST_INTENT));
     }
 
     @Override
@@ -121,8 +130,16 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         super.onDestroy();
         if (subscriptions.hasSubscriptions())
             subscriptions.unsubscribe();
-        if (bound)
-            unbindService(mConnection);
+        unbindFromService(token);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -149,22 +166,22 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         rxBus.publish(new BusEvents.ViewPagerPageChanged());
     }
 
-    private void replaceFragment() {
+    private void showDetails() {
         Intent intent = new Intent(this, Details.class);
         startActivity(intent);
     }
 
     private void initLibraries() {
-        rxBus = RxBus.getBus();
         subscriptions.add(rxBus.toObservable()
                 .subscribe(busClass -> {
                     if (busClass instanceof BusEvents.RecyclerViewItemClick)
                         if (rxBus.getValue(RxBus.TAG_PAGER_POSITION, 0) != 0)
-                            replaceFragment();
+                            showDetails();
                         else playMusic();
                 }));
         PicassoHelper.initPicasso(this);
         ObservableContainer.initAll(this);
+        token = bindToService(this);
     }
 
     private void playMusic() {
@@ -172,12 +189,24 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         ObservableContainer.getSongArrayListObservable()
                 .take(position + 1)
                 .last()
-                .subscribe(song -> {
-                    try {
-                        connectedService.setDataSource(song.getSong_data());
-                        connectedService.play();
-                    } catch (RemoteException e) {
-                        DebugHelper.LumberJack.e(e);
+                .subscribe(new Observer<Song>() {
+                    @Override
+                    public void onCompleted() {
+                        LumberJack.v("onCompleted called/MainActivity#playMusic");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LumberJack.e("onError called/MainActivity#playMusic");
+                        LumberJack.e(e);
+                    }
+
+                    @Override
+                    public void onNext(Song song) {
+                        queue.addToQueue(song);
+                        if (queue.getSize() == 1)
+                            setup(queue.parseNextSong());
+                        rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });
     }
@@ -227,9 +256,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         @Override
         public void onPageSelected(int position) {
             super.onPageSelected(position);
+            LumberJack.v("pager page changed!");
             rxBus.putValue(RxBus.TAG_PAGER_POSITION, position);
             rxBus.publish(new BusEvents.ViewPagerPageChanged());
         }
     }
-
 }

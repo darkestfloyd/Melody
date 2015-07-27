@@ -1,4 +1,4 @@
-package m.nischal.melody.Helper;
+package m.nischal.melody.Util;
 
 /*The MIT License (MIT)
  *
