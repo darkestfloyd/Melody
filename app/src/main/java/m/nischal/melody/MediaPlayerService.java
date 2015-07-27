@@ -87,9 +87,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getPathObserver());
         subscriptions.add(sc);
-
-        if (mPlayer.isPlaying())
-            playerStateChanged(STATE_PLAYING);
     }
 
     private Observer<String> getPathObserver() {
@@ -103,6 +100,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                     LumberJack.e(e);
                 } finally {
                     mPlayer.start();
+                    playerStateChanged(STATE_PLAYING);
                 }
             }
 

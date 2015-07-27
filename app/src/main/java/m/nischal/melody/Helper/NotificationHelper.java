@@ -136,7 +136,6 @@ public class NotificationHelper {
     private void updateNotification(int newState) {
         switch (newState) {
             case MediaPlayerService.STATE_PLAYING:
-                setUpRemoteViews();
                 remoteViews.setImageViewResource(R.id.action_play_pause, R.drawable.ic_pause_white_36dp);
                 notification.bigContentView = remoteViews;
                 notifyChange();
