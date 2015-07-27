@@ -244,6 +244,6 @@ public final class Song extends _BaseModel {
      */
     @Override
     public String getImagePath() {
-        return null;
+        return song_data;
     }
 }

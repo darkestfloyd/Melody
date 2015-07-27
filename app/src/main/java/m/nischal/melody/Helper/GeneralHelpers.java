@@ -28,6 +28,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -173,8 +175,8 @@ public class GeneralHelpers {
 
     public static class PicassoHelper {
 
-        public static Picasso picassoWrapper;
         public static final String TAG = "m.nischal.melody.PICASSO_TAG";
+        public static Picasso picassoWrapper;
 
         public static void initPicasso(Context context) {
             picassoWrapper = Picasso.with(context);
@@ -189,6 +191,28 @@ public class GeneralHelpers {
                     .into(imageView);
         }
 
+    }
+
+    public static class GlideHelper {
+        public static RequestManager glideWrapper;
+
+        public static void initGlide(Context context) {
+            glideWrapper = Glide.with(context);
+        }
+
+        public static void putInImageView(String path, ImageView imageView) {
+            glideWrapper
+                    .load(path)
+                    .error(R.drawable.ic_album_black_48dp)
+                    .into(imageView);
+        }
+
+        public static void putInImageView(byte[] image, ImageView imageView) {
+            glideWrapper
+                    .load(image)
+                    .error(R.drawable.ic_album_black_48dp)
+                    .into(imageView);
+        }
     }
 
 }

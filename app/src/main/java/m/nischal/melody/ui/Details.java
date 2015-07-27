@@ -16,13 +16,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Util.ObservableContainer;
-import m.nischal.melody.Util.RxBus;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
+import m.nischal.melody.Util.ObservableContainer;
+import m.nischal.melody.Util.RxBus;
 import rx.Observable;
 
-import static m.nischal.melody.Helper.GeneralHelpers.*;
+import static m.nischal.melody.Helper.GeneralHelpers.GlideHelper;
 
 public class Details extends AppCompatActivity {
 
@@ -89,7 +89,8 @@ public class Details extends AppCompatActivity {
 
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         image = (ImageView) findViewById(R.id.image);
-        PicassoHelper.putInImageView(model.getImagePath(), image);
+//        PicassoHelper.putInImageView(model.getImagePath(), image);
+        GlideHelper.putInImageView(model.getImagePath(), image);
         statusBar = (ImageView) findViewById(R.id.statusBar);
     }
 
