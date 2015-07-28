@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import m.nischal.melody.Helper.GeneralHelpers;
 import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
@@ -31,7 +32,6 @@ import rx.Observer;
 import rx.subscriptions.CompositeSubscription;
 
 import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
-import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper;
 import static m.nischal.melody.MediaPlayerPresenter.Token;
 import static m.nischal.melody.MediaPlayerPresenter.bindToService;
 import static m.nischal.melody.MediaPlayerPresenter.setup;
@@ -70,17 +70,17 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         @Override
         public void onReceive(Context context, Intent intent) {
             String actionType = intent.getExtras().getString(MediaPlayerService.BROADCAST_TYPE);
-            if(actionType == null)
+            if (actionType == null)
                 return;
             LumberJack.d("Broadcast received with action: " + actionType);
             if ((actionType.equals(MediaPlayerService.NOTIFICATION_PLAY_COMPLETED)
                     || actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_NEXT))
                     && queue.hasNext()) {
                 LumberJack.d("setting up next song!");
-                setup(queue.parseNextSong());
+                setup(queue.parseNextSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
             } else if (actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_PREV) && queue.hasPrev()) {
                 LumberJack.d("setting up prev song!");
-                setup(queue.parsePrevSong());
+                setup(queue.parsePrevSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
             }
         }
     };
@@ -179,7 +179,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                             showDetails();
                         else playMusic();
                 }));
-        PicassoHelper.initPicasso(this);
+        //PicassoHelper.initPicasso(this);
+        GeneralHelpers.GlideHelper.initGlide(this);
         ObservableContainer.initAll(this);
         token = bindToService(this);
     }
@@ -205,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     public void onNext(Song song) {
                         queue.addToQueue(song);
                         if (queue.getSize() == 1)
-                            setup(queue.parseNextSong());
+                            setup(queue.parseNextSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
                         rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });

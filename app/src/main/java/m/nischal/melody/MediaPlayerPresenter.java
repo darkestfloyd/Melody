@@ -22,6 +22,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.CheckResult;
@@ -88,10 +89,10 @@ public class MediaPlayerPresenter {
         }
     }
 
-    public static boolean setup(@NonNull List<String> details) {
+    public static boolean setup(@NonNull List<String> details, Bitmap bitmap, int color) {
         LumberJack.d("setting up");
         try {
-            mService.setDataSource(details);
+            mService.setDataSource(details, bitmap, color);
             return true;
         } catch (RemoteException e) {
             report(e);

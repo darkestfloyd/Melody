@@ -32,11 +32,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import m.nischal.melody.Helper.GeneralHelpers;
+import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 
-import static m.nischal.melody.Helper.GeneralHelpers.*;
+import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper;
+import static m.nischal.melody.Helper.GeneralHelpers.GlideHelper;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RVViewHolder> {
 
@@ -57,7 +58,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         _BaseModel b = baseModelArrayList.get(position);
         holder.titleText.setText(b.getTitle());
         holder.subTitleText.setText(b.getSubTitle());
-        PicassoHelper.putInImageView(b.getImagePath(), holder.imageView);
+        if (b instanceof Song) {
+            GlideHelper.getBitmap((Song) b, holder.imageView);
+        } else
+            GlideHelper.putInImageView(b.getImagePath(), holder.imageView);
         holder.menuImage.setOnClickListener(view -> DebugHelper.overdose(holder.menuImage.getContext(), "click on menu"));
     }
 

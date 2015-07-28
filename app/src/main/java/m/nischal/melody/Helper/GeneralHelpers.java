@@ -24,16 +24,26 @@ package m.nischal.melody.Helper;
  */
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
+import rx.Observable;
 import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class GeneralHelpers {
 
@@ -171,24 +181,55 @@ public class GeneralHelpers {
         }
     }
 
-    public static class PicassoHelper {
+    public static class GlideHelper {
+        private static final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        private static final Object lock = new Object();
+        public static RequestManager glideWrapper;
 
-        public static Picasso picassoWrapper;
-        public static final String TAG = "m.nischal.melody.PICASSO_TAG";
-
-        public static void initPicasso(Context context) {
-            picassoWrapper = Picasso.with(context);
-            picassoWrapper.setLoggingEnabled(false);
+        public static void initGlide(Context context) {
+            glideWrapper = Glide.with(context);
         }
 
         public static void putInImageView(String path, ImageView imageView) {
-            picassoWrapper
+            glideWrapper
                     .load(path)
-                    .tag(TAG)
                     .error(R.drawable.ic_album_black_48dp)
                     .into(imageView);
         }
 
+        public static void putInImageView(byte[] image, ImageView imageView) {
+            glideWrapper
+                    .load(image)
+                    .error(R.drawable.ic_album_black_48dp)
+                    .into(imageView);
+        }
+
+        public static void getBitmap(Song song, ImageView imageView) {
+            if (song.image == null)
+                Observable.just(song)
+                        .subscribeOn(Schedulers.io())
+                        .flatMap(s -> {
+                            synchronized (lock) {
+                                retriever.setDataSource(s.getSong_path());
+                                return Observable.just(retriever.getEmbeddedPicture());
+                            }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(image -> {
+                            GlideHelper.glideWrapper
+                                    .load(image)
+                                    .asBitmap()
+                                    .into(new SimpleTarget<Bitmap>() {
+                                        @Override
+                                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                            song.image = resource;
+                                            imageView.setImageBitmap(resource);
+                                            song.colorPalette = Palette.from(resource).generate();
+                                        }
+                                    });
+                        });
+            else imageView.setImageBitmap(song.image);
+        }
     }
 
 }

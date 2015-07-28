@@ -36,9 +36,6 @@ import m.nischal.melody.Util.BusEvents;
 import m.nischal.melody.Util.RxBus;
 import rx.Subscription;
 
-import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper.TAG;
-import static m.nischal.melody.Helper.GeneralHelpers.PicassoHelper.picassoWrapper;
-
 public class RecyclerViewQuickRecall extends RecyclerView.OnScrollListener {
 
     private int scrollValue;
@@ -81,19 +78,12 @@ public class RecyclerViewQuickRecall extends RecyclerView.OnScrollListener {
         //0 - idle
         //1 - dragging
         //3 - setting
-
-        if (newState == RecyclerView.SCROLL_STATE_IDLE)
-            picassoWrapper.resumeTag(TAG);
     }
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
         scrollValue += dy;
-
-        if (Math.abs(dy) > 50)
-            picassoWrapper.pauseTag(TAG);
-        else picassoWrapper.resumeTag(TAG);
 
         if (dy > 10 && scrollValue > 500 && toolbarVisible) {
             animate(-toolbar.getBottom(), 1f, primary, black, -tabLayout.getTop(), false); //hide
