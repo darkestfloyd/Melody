@@ -23,6 +23,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
@@ -33,6 +34,7 @@ import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.R;
 import m.nischal.melody.Util.BusEvents;
 import m.nischal.melody.Util.RxBus;
+import m.nischal.melody.ui.NowPlaying;
 import rx.Observer;
 import rx.Subscription;
 
@@ -60,7 +62,8 @@ public class NotificationHelper {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setColor(context.getResources().getColor(R.color.primary))
                         .setContentText("test")
-                        .setContentTitle("title");
+                        .setContentTitle("title")
+                        .setContentIntent(PendingIntent.getActivity(context, 0x3, new Intent(context, NowPlaying.class), PendingIntent.FLAG_UPDATE_CURRENT));
         sc = rxBus.toObservable()
                 .subscribe(getObserver());
         remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_expanded);
@@ -110,20 +113,22 @@ public class NotificationHelper {
         };
     }
 
-    private void setUpRemoteViews() {
-        remoteViews.setInt(R.id.notificationView, "setBackgroundColor", context.getResources().getColor(R.color.primary));
+    private void setUpRemoteViews(Bitmap bitmap, int color) {
+        remoteViews.setInt(R.id.notificationView, "setBackgroundColor", color);
         remoteViews.setTextViewText(R.id.title, details.get(1));
-
+        remoteViews.setTextViewText(R.id.sub1, details.get(2));
+        remoteViews.setTextViewText(R.id.sub2, details.get(3));
+        remoteViews.setImageViewBitmap(R.id.image, bitmap);
         remoteViews.setOnClickPendingIntent(R.id.action_play_pause, p1);
         remoteViews.setOnClickPendingIntent(R.id.action_next, p2);
         remoteViews.setOnClickPendingIntent(R.id.action_prev, p3);
     }
 
-    public Notification buildNormal(List<String> details) {
+    public Notification buildNormal(List<String> details, Bitmap bitmap, int color) {
 
         this.details = details;
 
-        setUpRemoteViews();
+        setUpRemoteViews(bitmap, color);
 
         notification = notificationBuilder
                 .setAutoCancel(false).build();

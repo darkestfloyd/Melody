@@ -23,7 +23,6 @@ package m.nischal.melody.RecyclerViewHelpers;
  *    THE SOFTWARE.
  */
 
-import android.media.MediaMetadataRetriever;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,17 +35,12 @@ import java.util.ArrayList;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper;
 import static m.nischal.melody.Helper.GeneralHelpers.GlideHelper;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RVViewHolder> {
 
-    private static final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-    private final Object lock = new Object();
     private ArrayList<_BaseModel> baseModelArrayList;
 
     public RecyclerViewAdapter(ArrayList<_BaseModel> baseModelArrayList) {
@@ -65,16 +59,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.titleText.setText(b.getTitle());
         holder.subTitleText.setText(b.getSubTitle());
         if (b instanceof Song) {
-            Observable.just(b.getImagePath())
-                    .subscribeOn(Schedulers.io())
-                    .flatMap(s -> {
-                        synchronized (lock) {
-                            retriever.setDataSource(s);
-                        }
-                        return Observable.just(retriever.getEmbeddedPicture());
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(image -> GlideHelper.putInImageView(image, holder.imageView));
+            GlideHelper.getBitmap((Song) b, holder.imageView);
         } else
             GlideHelper.putInImageView(b.getImagePath(), holder.imageView);
         holder.menuImage.setOnClickListener(view -> DebugHelper.overdose(holder.menuImage.getContext(), "click on menu"));

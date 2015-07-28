@@ -2,6 +2,7 @@ package m.nischal.melody;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
@@ -44,11 +45,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private final IMelodyPlayer.Stub mBinder = new IMelodyPlayer.Stub() {
 
         @Override
-        public void setDataSource(List<String> details) throws RemoteException {
+        public void setDataSource(List<String> details, Bitmap bitmap, int color) throws RemoteException {
 
-            //if (!foreground)
-            makeForeground(details);
-            //TODO else part to update notification
+            startForeground(1, notificationHelper.buildNormal(details, bitmap, color));
 
 
             /*LumberJack.d("path: " + details.get(0));
@@ -130,7 +129,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         } else {
             mPlayer.setOnCompletionListener(this);
             rxBus = RxBus.getBus();
-            notificationHelper = NotificationHelper.getInstance(this);
+            notificationHelper = NotificationHelper.getInstance(getApplicationContext());
             subscribeToBus();
         }
         return START_STICKY;
@@ -201,10 +200,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mPlayer.release();
         subscriptions.unsubscribe();
         stopForeground(true);
-    }
-
-    private void makeForeground(List<String> details) {
-        startForeground(1, notificationHelper.buildNormal(details));
     }
 
     @Override

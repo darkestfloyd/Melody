@@ -18,6 +18,8 @@ package m.nischal.melody.Util;
  */
 
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
@@ -62,9 +64,18 @@ public class PlayingQueue {
         List<String> details = new ArrayList<>();
         details.add(song.getSong_path());
         details.add(song.getSong_title());
-        details.add(song.getSong_album());
         details.add(song.getSong_artist());
+        details.add(song.getSong_album());
+        details.add(song.getSong_id());
         return details;
+    }
+
+    public Bitmap getBitmap() {
+        return queue.get(playPosition).image;
+    }
+
+    public int getVibrantPaletteColor() {
+        return queue.get(playPosition).colorPalette.getVibrantColor(Color.GRAY);
     }
 
     public void setPlayPosition(@NonNull int position) {
@@ -129,10 +140,5 @@ public class PlayingQueue {
     @CheckResult
     public boolean isEmpty() {
         return queue.isEmpty();
-    }
-
-    public void printAll() {
-        LumberJack.d("queue size: ", queue.size());
-        LumberJack.d("playPosition: ", playPosition);
     }
 }

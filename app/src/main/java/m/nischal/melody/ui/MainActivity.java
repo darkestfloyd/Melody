@@ -77,10 +77,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     || actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_NEXT))
                     && queue.hasNext()) {
                 LumberJack.d("setting up next song!");
-                setup(queue.parseNextSong());
+                setup(queue.parseNextSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
             } else if (actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_PREV) && queue.hasPrev()) {
                 LumberJack.d("setting up prev song!");
-                setup(queue.parsePrevSong());
+                setup(queue.parsePrevSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
             }
         }
     };
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     public void onNext(Song song) {
                         queue.addToQueue(song);
                         if (queue.getSize() == 1)
-                            setup(queue.parseNextSong());
+                            setup(queue.parseNextSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
                         rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });

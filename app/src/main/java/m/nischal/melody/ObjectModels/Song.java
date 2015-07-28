@@ -24,9 +24,11 @@ package m.nischal.melody.ObjectModels;
  */
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.util.ArrayMap;
+import android.support.v7.graphics.Palette;
 
 import java.util.ArrayList;
 
@@ -78,6 +80,8 @@ public final class Song extends _BaseModel {
     final private String song_id, song_title, song_display_name, song_date_added, song_date_modified, song_size,
             song_album, song_album_id, song_artist, song_artist_id, song_bookmark,
             song_duration, song_track, song_year, song_data;
+    public Bitmap image;
+    public Palette colorPalette;
 
     /**
      * Constructor for Song object.
