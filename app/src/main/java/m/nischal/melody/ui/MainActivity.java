@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import m.nischal.melody.Helper.GeneralHelpers;
+import m.nischal.melody.Helper.GlideHelper;
 import m.nischal.melody.MediaPlayerService;
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     private final CompositeSubscription subscriptions = new CompositeSubscription();
     private final RxBus rxBus = RxBus.getBus();
-    private final PlayingQueue queue = PlayingQueue.getInstance();
+    private final PlayingQueue queue = PlayingQueue.getInstance(this);
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -77,10 +78,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     || actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_NEXT))
                     && queue.hasNext()) {
                 LumberJack.d("setting up next song!");
-                setup(queue.parseNextSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
+                setup(queue.parseNextSong(), queue.getBitmap(getApplicationContext()), queue.getVibrantPaletteColor());
             } else if (actionType.equals(MediaPlayerService.NOTIFICATION_ACTION_PREV) && queue.hasPrev()) {
                 LumberJack.d("setting up prev song!");
-                setup(queue.parsePrevSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
+                setup(queue.parsePrevSong(), queue.getBitmap(getApplicationContext()), queue.getVibrantPaletteColor());
             }
         }
     };
@@ -179,8 +180,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                             showDetails();
                         else playMusic();
                 }));
-        //PicassoHelper.initPicasso(this);
-        GeneralHelpers.GlideHelper.initGlide(this);
+        GlideHelper.initGlide(this);
         ObservableContainer.initAll(this);
         token = bindToService(this);
     }
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                     public void onNext(Song song) {
                         queue.addToQueue(song);
                         if (queue.getSize() == 1)
-                            setup(queue.parseNextSong(), queue.getBitmap(), queue.getVibrantPaletteColor());
+                            setup(queue.parseNextSong(), queue.getBitmap(getApplicationContext()), queue.getVibrantPaletteColor());
                         rxBus.publish(new BusEvents.NewSongAddedToQueue());
                     }
                 });

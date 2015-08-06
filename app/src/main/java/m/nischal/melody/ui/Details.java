@@ -16,13 +16,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import m.nischal.melody.Helper.GlideHelper;
 import m.nischal.melody.ObjectModels._BaseModel;
 import m.nischal.melody.R;
 import m.nischal.melody.Util.ObservableContainer;
 import m.nischal.melody.Util.RxBus;
 import rx.Observable;
-
-import static m.nischal.melody.Helper.GeneralHelpers.GlideHelper;
 
 public class Details extends AppCompatActivity {
 

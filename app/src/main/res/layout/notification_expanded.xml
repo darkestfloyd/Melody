@@ -10,7 +10,8 @@
         android:id="@id/image"
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:background="@drawable/header" />
+        android:scaleType="centerCrop"
+        tools:background="@drawable/header" />
 
     <TextView
         android:id="@+id/title"

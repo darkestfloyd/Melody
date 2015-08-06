@@ -33,13 +33,14 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 
 import m.nischal.melody.ObjectModels.Song;
 import m.nischal.melody.R;
+import m.nischal.melody.Util.ObservableContainer;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -178,57 +179,6 @@ public class GeneralHelpers {
                 Toast.makeText(c, s, DURATION).show();
             }
 
-        }
-    }
-
-    public static class GlideHelper {
-        private static final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        private static final Object lock = new Object();
-        public static RequestManager glideWrapper;
-
-        public static void initGlide(Context context) {
-            glideWrapper = Glide.with(context);
-        }
-
-        public static void putInImageView(String path, ImageView imageView) {
-            glideWrapper
-                    .load(path)
-                    .error(R.drawable.ic_album_black_48dp)
-                    .into(imageView);
-        }
-
-        public static void putInImageView(byte[] image, ImageView imageView) {
-            glideWrapper
-                    .load(image)
-                    .error(R.drawable.ic_album_black_48dp)
-                    .into(imageView);
-        }
-
-        public static void getBitmap(Song song, ImageView imageView) {
-            if (song.image == null)
-                Observable.just(song)
-                        .subscribeOn(Schedulers.io())
-                        .flatMap(s -> {
-                            synchronized (lock) {
-                                retriever.setDataSource(s.getSong_path());
-                                return Observable.just(retriever.getEmbeddedPicture());
-                            }
-                        })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(image -> {
-                            GlideHelper.glideWrapper
-                                    .load(image)
-                                    .asBitmap()
-                                    .into(new SimpleTarget<Bitmap>() {
-                                        @Override
-                                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                            song.image = resource;
-                                            imageView.setImageBitmap(resource);
-                                            song.colorPalette = Palette.from(resource).generate();
-                                        }
-                                    });
-                        });
-            else imageView.setImageBitmap(song.image);
         }
     }
 

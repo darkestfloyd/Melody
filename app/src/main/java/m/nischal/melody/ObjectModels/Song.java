@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.util.SimpleArrayMap;
 import android.support.v7.graphics.Palette;
 
 import java.util.ArrayList;

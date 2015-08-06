@@ -18,16 +18,21 @@ package m.nischal.melody.Util;
  */
 
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
+import android.support.v7.graphics.Palette;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import m.nischal.melody.ObjectModels.Song;
+import m.nischal.melody.R;
 import rx.Observable;
 
 import static m.nischal.melody.Helper.GeneralHelpers.DebugHelper.LumberJack;
@@ -41,7 +46,7 @@ public class PlayingQueue {
     private PlayingQueue() {
     }
 
-    public static PlayingQueue getInstance() {
+    public static PlayingQueue getInstance(Context context) {
         return playingQueue;
     }
 
@@ -50,16 +55,17 @@ public class PlayingQueue {
         queue.add(song);
     }
 
+    @CheckResult
     public List<String> parseNextSong() {
-        Song song = this.nextSong();
-        return parseSong(song);
+        return parseSong(this.nextSong());
     }
 
+    @CheckResult
     public List<String> parsePrevSong() {
-        Song song = this.prevSong();
-        return parseSong(song);
+        return parseSong(this.prevSong());
     }
 
+    @CheckResult
     private List<String> parseSong(Song song) {
         List<String> details = new ArrayList<>();
         details.add(song.getSong_path());
@@ -70,19 +76,25 @@ public class PlayingQueue {
         return details;
     }
 
-    public Bitmap getBitmap() {
-        return queue.get(playPosition).image;
+    @CheckResult
+    public Bitmap getBitmap(Context context) {
+        Bitmap b = queue.get(playPosition).image;
+        if (b == null)
+            return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_album_black_48dp);
+        return b;
     }
 
     public int getVibrantPaletteColor() {
-        return queue.get(playPosition).colorPalette.getVibrantColor(Color.GRAY);
+        Palette p = queue.get(playPosition).colorPalette;
+        if (p != null)
+            return p.getVibrantColor(Color.GRAY);
+        return Color.GRAY;
     }
 
     public void setPlayPosition(@NonNull int position) {
         playPosition = position;
     }
 
-    @CheckResult
     public void addToQueueAt(@NonNull int position, @NonNull Song song) {
         queue.add(position, song);
     }
