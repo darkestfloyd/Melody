@@ -11,4 +11,4 @@ This project was a summer project which I had to *drop* at that time. The motiva
 
 Just a word of advise, please __DO NOT__ copy Android related code from this repo as they are very outdated. The `targetSdkVersion` was 22 [at the time](https://github.com/DarkestFloyd/Melody/blob/develop/app/build.gradle#L23) of the project. 
 
-Apart from that, please feel free to browse the repo and for more information or any queries, do to reach out at [nischal (dot) bhatewara (at) gmail (dot) com](mailto:nischal.bhatewara@gmail.com)
+Apart from that, please feel free to browse the repo and I would be happy to answer any questions you may have. Send me an email at [nischal (dot) bhatewara (at) gmail (dot) com](mailto:nischal.bhatewara@gmail.com)
